@@ -1,10 +1,11 @@
 /* Daedalus Data Labs — one ink, one ground. Tokens match USAGE.md in the brand kit. */
-:root{--ink:#0B1526;--ground:#F4F3EF;--line:#E3E0D8;--muted:rgba(11,21,38,.65)}
-@media (prefers-color-scheme: dark){:root{--ink:#F4F3EF;--ground:#0B1526;--line:#1E2A3C;--muted:rgba(244,243,239,.65)}}
+:root{--ink:#0B1526;--ground:#F4F3EF;--line:#E3E0D8;--card:#FBFAF7;--muted:rgba(11,21,38,.65)}
+@media (prefers-color-scheme: dark){:root{--ink:#F4F3EF;--ground:#0B1526;--line:#1E2A3C;--card:#101C30;--muted:rgba(244,243,239,.65)}}
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{margin:0;background:var(--ground);color:var(--ink);font-family:Geist,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55;font-size:17px}
 a{color:inherit}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:28px 24px;max-width:1040px;margin:0 auto}
 .brand{display:flex;align-items:center;gap:14px;text-decoration:none}
 .mark{height:34px;width:auto;color:var(--ink);display:block}
@@ -15,15 +16,32 @@ a{color:inherit}
 .links a{text-decoration:none;color:var(--muted)}
 .links a:hover{color:var(--ink)}
 main{max-width:1040px;margin:0 auto;padding:0 24px 80px}
-.hero{padding:88px 0 56px;max-width:760px}
-.hero h1{font-size:clamp(34px,6vw,60px);line-height:1.02;letter-spacing:-.035em;font-weight:600;margin:0 0 22px}
-.hero p{font-size:20px;color:var(--muted);margin:0;max-width:600px}
-.block{border-top:1px solid var(--line);padding:44px 0;max-width:760px}
-.block h2{font-size:14px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
-.block h3{font-size:30px;font-weight:600;letter-spacing:-.03em;margin:0 0 10px}
-.block p{margin:0 0 18px}
+.hero{padding:88px 0 64px;max-width:780px}
+.eyebrow{font-size:14px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 18px}
+.hero h1{font-size:clamp(36px,6vw,64px);line-height:1.02;letter-spacing:-.035em;font-weight:600;margin:0 0 22px}
+.lede{font-size:20px;color:var(--muted);margin:0;max-width:620px}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding-bottom:56px}
+.product{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px;display:flex;flex-direction:column;scroll-margin-top:24px}
+.product-icon{width:56px;height:56px;border-radius:13px;display:block;margin-bottom:22px}
+.product h2{font-size:30px;font-weight:600;letter-spacing:-.03em;margin:0 0 6px}
+.tagline{font-size:19px;font-weight:500;letter-spacing:-.01em;margin:0 0 14px}
+.product p{margin:0 0 18px}
+.product p:not(.tagline){color:var(--muted)}
+.actions{margin-top:auto;padding-top:6px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
 .button{display:inline-block;background:var(--ink);color:var(--ground);text-decoration:none;font-weight:500;padding:12px 18px;border-radius:8px;font-size:15px}
 .button:hover{opacity:.9}
-.foot{border-top:1px solid var(--line);max-width:1040px;margin:0 auto;padding:28px 24px 48px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
-.foot p{margin:0;flex:1}
-@media (max-width:640px){.nav{padding:20px 16px}main{padding:0 16px 56px}.hero{padding:56px 0 40px}.foot{padding:24px 16px 40px}}
+.text-link{font-size:15px;font-weight:500;text-underline-offset:3px}
+.block{border-top:1px solid var(--line);padding:44px 0;max-width:760px}
+.block h2{font-size:14px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
+.block p{margin:0 0 18px}
+.foot{border-top:1px solid var(--line);max-width:1040px;margin:0 auto;padding:36px 24px 48px;display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.foot-brand{display:flex;align-items:center;gap:14px}
+.foot-brand p{margin:0}
+.foot-cols{display:flex;gap:48px;flex-wrap:wrap}
+.foot-cols div{display:flex;flex-direction:column;gap:8px}
+.foot-cols h3{font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px;color:var(--ink)}
+.foot-cols a{text-decoration:none}
+.foot-cols a:hover{color:var(--ink)}
+@media (max-width:760px){.products{grid-template-columns:1fr}}
+@media (max-width:640px){.nav{padding:20px 16px}.links{gap:16px}main{padding:0 16px 56px}.hero{padding:56px 0 44px}.product{padding:24px}.foot{padding:28px 16px 40px}.foot-cols{gap:32px}}
+@media (max-width:400px){.brand-sub{display:none}}

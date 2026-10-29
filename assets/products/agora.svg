@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="32" height="32">
+  <!--
+    Agora's mark: a lowercase alpha, the first letter of αγορά, as one
+    unbroken stroke of glass that swells through the loop and thins to a
+    flick at the tail. The alpha carries the Signature gradient, Aegean blue
+    through violet to coral: three hues, so it belongs to no single
+    university, which is the same reason the chrome carries none
+    (docs/ARCHITECTURE.md §11). The tile is near-white, so the colour is the
+    mark's; the iOS icon (AppIcon.icon) adds a near-black tile for Dark mode.
+    Drawn on Apple's 1024 icon canvas; the path is the stroke's outline,
+    filled nonzero so the crossing reads as over and under, and centred on
+    its own bounds a touch above the middle. docs/BRAND_FAMILIES.md §6 has
+    how it was chosen. scripts/make-images.mjs derives favicon.ico,
+    apple-icon.png, the web-app icons and the iOS app icon from this file;
+    edit here and run it, not the other way round.
+  -->
+  <defs>
+    <linearGradient id="tile" x1="120" y1="0" x2="904" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e6e4f0"/>
+    </linearGradient>
+    <radialGradient id="light" cx="290" cy="150" r="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+      <stop offset=".6" stop-color="#fff" stop-opacity=".04"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".5" stop-color="#fff" stop-opacity=".25"/>
+      <stop offset="1" stop-color="#fff" stop-opacity=".7"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a5fd8"/>
+      <stop offset=".5" stop-color="#7a4dff"/>
+      <stop offset="1" stop-color="#ff6a52"/>
+    </linearGradient>
+    <linearGradient id="shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".2"/>
+    </linearGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".55"/>
+      <stop offset=".45" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+    <path id="alpha" d="M740 217L733 231L726 246L720 261L715 276L709 291L703 307L697 322L690 338L684 353L678 369L671 384L664 399L658 414L651 429L644 444L636 459L629 473L621 487L614 501L606 514L598 527L589 539L581 551L573 562L564 573L555 584L546 593L537 602L528 611L519 619L510 626L501 632L492 638L483 643L473 647L464 651L455 654L445 656L436 658L426 659L417 660L409 660L402 659L395 658L389 656L384 654L379 652L374 649L370 647L367 644L363 640L360 637L356 633L353 629L350 624L348 619L345 613L343 608L340 602L338 595L337 589L335 582L334 574L334 567L333 560L333 552L334 545L334 537L335 529L337 522L338 515L340 508L343 501L345 494L348 488L351 481L355 476L358 470L362 465L366 460L371 455L377 450L382 445L387 441L393 437L399 433L404 430L410 427L416 425L422 422L428 420L434 419L440 417L446 416L452 416L459 415L465 415L471 415L477 416L483 417L489 418L495 419L501 421L507 424L513 426L519 429L525 433L531 437L536 441L542 446L548 451L554 457L559 464L565 471L570 479L575 487L580 496L585 506L589 516L593 528L597 538L601 549L605 559L609 569L613 579L618 589L622 599L627 608L632 617L636 626L641 634L646 642L652 650L657 658L663 665L668 673L674 679L680 686L686 692L693 698L699 703L706 709L713 713L720 718L727 722L735 725L742 728L750 730L758 732L765 734L773 734L781 735L789 734L797 733L804 732L812 730L819 727L826 724L833 720L839 715L829 683L822 682L816 681L811 681L806 680L802 679L798 678L794 676L790 674L787 672L784 670L781 668L778 666L775 663L773 661L770 658L767 655L765 651L762 648L759 644L757 640L754 635L752 630L749 625L746 620L744 614L741 608L738 602L736 596L733 589L731 582L728 574L726 566L723 558L721 550L718 542L716 533L714 524L711 514L709 505L707 494L702 478L697 462L692 447L685 432L678 418L671 404L663 391L654 378L645 366L635 355L625 344L614 334L603 325L592 317L580 309L567 302L555 296L542 290L529 285L515 281L502 278L488 276L474 274L460 273L447 273L433 274L419 275L405 277L392 280L378 284L365 288L352 293L339 299L327 305L314 312L302 320L290 329L279 338L268 347L258 358L247 370L237 382L229 395L221 408L213 422L207 436L201 450L197 464L193 478L189 493L187 508L185 522L184 537L184 552L185 567L186 581L188 596L190 610L194 625L198 639L203 653L209 666L215 680L223 692L231 705L240 717L251 728L262 739L273 749L286 758L300 766L314 774L329 780L345 784L361 788L377 790L394 791L411 791L428 789L446 787L464 783L482 777L498 771L515 763L530 755L545 746L559 736L572 725L585 714L597 702L609 689L620 676L630 662L640 648L649 634L658 619L667 604L675 589L683 573L690 558L697 542L703 525L710 509L715 492L721 475L726 459L731 442L736 425L741 408L745 391L749 374L753 357L756 340L760 323L763 306L765 290L768 273L770 257L772 241L772 225Z"/>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#tile)"/>
+  <rect width="1024" height="1024" fill="url(#light)"/>
+  <use href="#alpha" transform="translate(0 15)" fill="#000" stroke="#000" stroke-width="12" stroke-linejoin="round" opacity=".18" filter="url(#soft)"/>
+  <use href="#alpha" fill="url(#rim)" stroke="url(#rim)" stroke-width="12" stroke-linejoin="round" opacity=".85"/>
+  <use href="#alpha" fill="url(#glass)"/>
+  <use href="#alpha" fill="url(#shade)"/>
+  <use href="#alpha" fill="url(#gloss)"/>
+</svg>
