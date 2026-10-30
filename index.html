@@ -37,24 +37,21 @@
 
 <main>
   <section class="hero">
+    <div class="hero-copy">
+      <h1>We make Meridian and Agora.</h1>
+      <p class="lede">Meridian grades US-listed stocks and funds from 0 to 10 and publishes how each grade is calculated. Agora is a social network open only to people with a verified US university address, where each campus sees only its own posts.</p>
+    </div>
     <figure class="construct">
-      <svg viewBox="0 -34 214 236" role="img" aria-labelledby="construct-cap">
+      <svg viewBox="-92 -34 384 214" role="img" aria-labelledby="construct-cap">
         <path class="ink" d="M0 173.2 L25.83 158.29 L25.83 115.4 L0 173.2 Z M34.83 153.09 L60.67 138.17 L60.67 51.13 L34.83 96.87 Z M69.67 132.98 L95.5 118.06 L95.5 5.26 L69.67 37.87 Z M104.5 118.06 L130.33 132.98 L130.33 37.87 L104.5 5.26 Z M139.33 138.17 L165.17 153.09 L165.17 96.87 L139.33 51.13 Z M174.17 158.29 L200 173.2 L174.17 115.4 Z"/>
-        <path class="outline o-lambda" d="M0 173.2 L100 0 L200 173.2 L100 115.47 Z"/>
-        <path class="outline o-left" d="M0 173.2 L95.5 5.26 L95.5 118.06 Z"/>
-        <path class="outline o-right" d="M200 173.2 L104.5 5.26 L104.5 118.06 Z"/>
         <g class="labels">
-          <g transform="translate(0 186)"><path class="glyph" d="M0 12 L6 0 L12 12 Z"/><text x="18" y="11">Daedalus</text></g>
-          <g transform="translate(148 186)"><path class="glyph" d="M0 12 L6 0 L12 12 Z"/><text x="18" y="11">Data</text></g>
+          <g transform="translate(-86 92)"><path class="glyph" d="M0 12 L6 0 L12 12 Z"/><text x="18" y="11">Daedalus</text></g>
+          <g transform="translate(214 92)"><path class="glyph" d="M0 12 L6 0 L12 12 Z"/><text x="18" y="11">Data</text></g>
           <g transform="translate(112 -26)"><path class="glyph" d="M0 12 L6 0 L12 12"/><text x="18" y="11">Labs</text></g>
         </g>
       </svg>
       <figcaption id="construct-cap">The mark is two wings. Each is a Greek delta (Δ), for Daedalus and Data; together they form a lambda (Λ), for Labs. The feathers run from shortest to longest, the order Ovid gives for the wings Daedalus built.</figcaption>
     </figure>
-    <div class="hero-copy">
-      <h1>We make Meridian and Agora.</h1>
-      <p class="lede">Meridian grades US-listed stocks and funds from 0 to 10 and publishes how each grade is calculated. Agora is a social network open only to people with a verified US university address, where each campus sees only its own posts.</p>
-    </div>
   </section>
 
   <section class="product meridian" id="meridian">
@@ -125,7 +122,6 @@
     <div><h3>Company</h3><a href="mailto:contact@daedalusdatalabs.com">Email</a></div>
   </nav>
 </footer>
-<svg class="fly" viewBox="0 5.26 200 167.94" aria-hidden="true"><path fill="currentColor" d="M0 173.2 L25.83 158.29 L25.83 115.4 L0 173.2 Z M34.83 153.09 L60.67 138.17 L60.67 51.13 L34.83 96.87 Z M69.67 132.98 L95.5 118.06 L95.5 5.26 L69.67 37.87 Z M104.5 118.06 L130.33 132.98 L130.33 37.87 L104.5 5.26 Z M139.33 138.17 L165.17 153.09 L165.17 96.87 L139.33 51.13 Z M174.17 158.29 L200 173.2 L174.17 115.4 Z"/></svg>
 <script>
 (function(){
   var root=document.documentElement, btn=document.querySelector('.theme'), meta=document.querySelector('meta[name=theme-color]');
@@ -144,21 +140,10 @@
         {duration:520,easing:'cubic-bezier(.4,0,.2,1)',pseudoElement:'::view-transition-new(root)'});
     });
   });
-  // the hero mark rises and shrinks into the header slot as the page scrolls
-  var fly=document.querySelector('.fly'), src=document.querySelector('.construct .ink'), slot=document.querySelector('.brand .mark'), nav=document.querySelector('.nav');
-  if(!still&&fly&&src&&slot){
-    root.classList.add('fly-on'); var m=null, queued=false;
-    function measure(){var r=src.getBoundingClientRect(), t=slot.getBoundingClientRect(), y=scrollY;
-      m={top:r.top+y,left:r.left,w:r.width,h:r.height,sTop:t.top+ (nav.classList.contains('stuck')?0:0),sLeft:t.left,sW:t.width};
-      fly.style.width=m.w+'px'; fly.style.height=m.h+'px'; frame();}
-    function frame(){queued=false; if(!m)return; var y=scrollY, dist=Math.max(1,m.top-m.sTop), p=Math.min(1,Math.max(0,y/dist));
-      var top=(m.top-y)*(1-p)+m.sTop*p, left=m.left*(1-p)+m.sLeft*p, sc=(m.w*(1-p)+m.sW*p)/m.w;
-      if(p>=1)top=m.sTop;
-      fly.style.transform='translate('+left+'px,'+top+'px) scale('+sc+')';
-      nav.classList.toggle('stuck',y>2);}
-    addEventListener('scroll',function(){if(!queued){queued=true;requestAnimationFrame(frame)}},{passive:true});
-    addEventListener('resize',measure); (document.fonts?document.fonts.ready:Promise.resolve()).then(measure); addEventListener('load',measure); measure();
-  }
+  // pinned header: content fades beneath it once the page has scrolled
+  var nav=document.querySelector('.nav');
+  function stuck(){nav.classList.toggle('stuck',scrollY>2)}
+  addEventListener('scroll',stuck,{passive:true}); stuck();
   // product bands enter once as they reach the viewport; method steps follow in order
   var items=document.querySelectorAll('.reveal');
   if(still||!('IntersectionObserver' in window)){items.forEach(function(n){n.classList.add('in')});return;}
