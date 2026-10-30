@@ -36,6 +36,9 @@ so the mark and the name read as one unit.
 - Favicons: the mark alone on a transparent ground, redrawn on the pixel grid so each feather
   and gap lands on whole pixels (16 px: feathers 1-2-2-2-2-1, gaps 1-1-2-1-1; 32 px: feathers 4,
   gaps 1-1-2-1-1). `favicon.svg` uses the 16 px drawing and switches to marble in dark mode.
+- On the site every mark uses the same proportions, drawn at the size it renders: header 36x30
+  (feathers 5), footer 30x24 (feathers 4), splash 150x126 (feathers 20, gaps 5-5-10-5-5; shown at
+  0.6x on phones so 12/3/6 stay on whole pixels).
 
 ## Files
 

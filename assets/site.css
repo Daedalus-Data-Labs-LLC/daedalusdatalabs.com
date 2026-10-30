@@ -16,8 +16,8 @@ a{color:inherit}
 @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.nav.stuck::before{background:color-mix(in srgb,var(--ground) 58%,transparent);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%)}}
 .nav.stuck::before{box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 -1px 0 var(--glass-edge),0 10px 30px -18px rgba(11,21,38,.35)}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-.mark{height:30px;width:auto;display:block}
-.mark.small{height:24px}
+.mark{width:36px;height:30px;display:block}
+.mark.small{width:30px;height:24px}
 .brand-name{display:flex;flex-direction:column;gap:1px;line-height:1}
 .brand-main{font-weight:600;font-size:18px;letter-spacing:-.02em}
 .brand-sub{font-weight:400;font-size:11.5px;color:var(--muted)}
@@ -32,7 +32,7 @@ a{color:inherit}
 
 /* Hero: one centred column, mark over headline over lede */
 .hero{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:min(calc(100svh - 56px),760px);padding:56px 0 72px}
-.hero-mark{height:112px;width:auto;display:block;margin:0 0 40px}
+.hero-mark{width:150px;height:126px;display:block;margin:0 0 40px}
 .hero h1{font-size:clamp(40px,5.6vw,68px);line-height:1.02;letter-spacing:-.045em;font-weight:600;margin:0 0 20px;max-width:16ch;text-wrap:balance}
 .lede{font-size:20px;line-height:1.5;color:var(--muted);margin:0;max-width:52ch;text-wrap:balance}
 .ink{fill:var(--ink)}
@@ -88,7 +88,7 @@ a{color:inherit}
 @media (max-width:900px){
 .product,.product.agora,.closing{grid-template-columns:1fr}
 .hero{min-height:0;padding:48px 0 64px}
-.hero-mark{height:80px;margin-bottom:28px}
+.hero-mark{width:90px;height:75.6px;margin-bottom:28px}
 .product{gap:44px;padding:64px 0}
 .product.agora .shot{order:2}
 .closing{gap:40px;padding:56px 0 72px}
