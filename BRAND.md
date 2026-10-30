@@ -30,8 +30,9 @@ so the mark and the name read as one unit.
 ## Sizes
 
 - The lockup is used where the name is at least 16 px tall.
-- App icons (apple-touch, 512 tile): the mark alone, centred on a marble tile at 62% of the
-  tile's width.
+- App icons (apple-touch 180 px, 512 tile): the mark alone on a marble tile at 73% of the tile's
+  width, drawn on the pixel grid with the favicon's proportions (gaps a quarter of a feather, the
+  centre gap doubled). 180 px: feathers 18, gaps 4-4-8-4-4.
 - Favicons: the mark alone on a transparent ground, redrawn on the pixel grid so each feather
   and gap lands on whole pixels (16 px: feathers 1-2-2-2-2-1, gaps 1-1-2-1-1; 32 px: feathers 4,
   gaps 1-1-2-1-1). `favicon.svg` uses the 16 px drawing and switches to marble in dark mode.
