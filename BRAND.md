@@ -15,10 +15,11 @@ spells the company: each wing is a **Δ** (delta, D), and the two together form 
 | Wings | Each half is a triangle: outer tip, apex, notch | Each wing is a Δ, a D. |
 | Feathers | Three per wing, shortest outside, longest at the body | Ovid's order: small to large. |
 | Feather tops | Follow a gentle arc rather than the straight 60° side | Ovid: he "bent them to the shape of birds". |
-| Gaps | One width everywhere, including the body between the wings | One rule for every space. |
+| Gaps | A quarter of a feather between feathers; doubled at the body, where the wings part | The wider centre gap keeps the two Δs readable as separate wings at every size, down to the 16 px favicon. |
 | Fill | Solid, one ink: `#0B1526` on marble `#F4F3EF`, or reversed | Holds at every size. Bronze `#B07A2E` is used only in construction drawings. |
 
-The SVG viewBox is cropped to the ink (`0 5.26 200 167.94`): no padding. Clear space is
+The SVG viewBox is cropped to the ink (`0 0 150 126`): no padding. Feathers are 20 wide, gaps 5-5-10-5-5,
+so every vertical edge falls on a whole unit. Clear space is
 supplied by the layout and is at least one feather width on every side.
 
 ## Lockup
@@ -43,6 +44,6 @@ so the mark and the name read as one unit.
 ## Files
 
 - `daedalus-master-ink.svg`, `daedalus-master-reversed.svg`: the source.
-- `daedalus-master-ink.png`, `daedalus-master-reversed.png`: 7600 × 6382, transparent, cropped to the ink.
+- `daedalus-master-ink.png`, `daedalus-master-reversed.png`: 7600 × 6384, transparent, cropped to the ink.
 - `daedalus-mark-ink.svg`, `daedalus-mark-reversed.svg`: for the web.
 - `daedalus-tile-512.png`, `apple-touch-icon.png`, `favicon-32.png`, `favicon-16.png`, `/favicon.svg`, `/favicon.ico` (16/32/48), `og.png`.
