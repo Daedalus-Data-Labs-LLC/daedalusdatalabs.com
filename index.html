@@ -144,6 +144,22 @@
   var nav=document.querySelector('.nav');
   function stuck(){nav.classList.toggle('stuck',scrollY>2)}
   addEventListener('scroll',stuck,{passive:true}); stuck();
+  // in-page links glide to their section and stop just below the pinned header
+  var glide=0;
+  function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+  function stop(){cancelAnimationFrame(glide);glide=0}
+  ['wheel','touchstart','keydown'].forEach(function(e){addEventListener(e,stop,{passive:true})});
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    var el=document.getElementById(a.getAttribute('href').slice(1)); if(!el)return;
+    a.addEventListener('click',function(ev){
+      ev.preventDefault(); stop();
+      var from=scrollY, to=Math.min(el.getBoundingClientRect().top+from-nav.offsetHeight-16,root.scrollHeight-innerHeight), d=to-from;
+      history.pushState(null,'',a.hash);
+      if(still||!d){scrollTo(0,to);return;}
+      var dur=Math.min(1100,Math.max(500,Math.abs(d)*.45)), t0=performance.now();
+      (function step(now){var t=Math.min(1,(now-t0)/dur);scrollTo(0,from+d*ease(t));if(t<1)glide=requestAnimationFrame(step);else glide=0;})(t0);
+    });
+  });
   // product bands enter once as they reach the viewport; method steps follow in order
   var items=document.querySelectorAll('.reveal');
   if(still||!('IntersectionObserver' in window)){items.forEach(function(n){n.classList.add('in')});return;}
