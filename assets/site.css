@@ -11,7 +11,7 @@ a{color:inherit}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-top:26px;padding-bottom:26px}
 .brand{display:flex;align-items:center;gap:14px;text-decoration:none}
 .mark{height:34px;width:auto;display:block}
-.mark.small{height:22px}
+.mark.small{height:24px}
 .brand-name{font-weight:600;font-size:19px;letter-spacing:-.02em}
 .brand-sub{font-weight:400;color:var(--muted)}
 .links{display:flex;align-items:center;gap:24px;font-size:15px;font-weight:500}
@@ -38,7 +38,7 @@ a{color:inherit}
 .over line,.over circle{fill:none;stroke:var(--ground);stroke-opacity:.38;stroke-width:.6;vector-effect:non-scaling-stroke;stroke-dasharray:3 4}
 @media (prefers-reduced-motion:no-preference){
 .guides line{stroke-dashoffset:0;animation:fade .6s ease-out both}
-.circles circle{stroke-dasharray:360;stroke-dashoffset:360;animation:draw 1.1s cubic-bezier(.6,0,.2,1) .25s forwards}
+.circles circle{stroke-dasharray:380;stroke-dashoffset:380;animation:draw 1.1s cubic-bezier(.6,0,.2,1) .25s forwards}
 .circles circle:nth-child(2),.circles circle:nth-child(4){animation-delay:.45s}
 .dims{animation:fade .5s ease-out 1.1s both}
 .ink,.over{animation:fill .7s ease-out 1.25s both}
