@@ -30,12 +30,15 @@ so the mark and the name read as one unit.
 ## Sizes
 
 - The lockup is used where the name is at least 16 px tall.
-- The mark alone is used for app icons and favicons, centred on a marble tile at 62% of the
+- App icons (apple-touch, 512 tile): the mark alone, centred on a marble tile at 62% of the
   tile's width.
+- Favicons: the mark alone on a transparent ground, redrawn on the pixel grid so each feather
+  and gap lands on whole pixels (16 px: feathers 1-2-2-2-2-1, gaps 1-1-2-1-1; 32 px: feathers 4,
+  gaps 1-1-2-1-1). `favicon.svg` uses the 16 px drawing and switches to marble in dark mode.
 
 ## Files
 
 - `daedalus-master-ink.svg`, `daedalus-master-reversed.svg`: the source.
 - `daedalus-master-ink.png`, `daedalus-master-reversed.png`: 7600 × 6382, transparent, cropped to the ink.
 - `daedalus-mark-ink.svg`, `daedalus-mark-reversed.svg`: for the web.
-- `daedalus-tile-512.png`, `apple-touch-icon.png`, `favicon-32.png`, `favicon-16.png`, `og.png`.
+- `daedalus-tile-512.png`, `apple-touch-icon.png`, `favicon-32.png`, `favicon-16.png`, `/favicon.svg`, `/favicon.ico` (16/32/48), `og.png`.
