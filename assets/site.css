@@ -30,13 +30,11 @@ a{color:inherit}
 [data-theme=dark] .theme .sun,[data-theme=dark] .theme .rays{display:none}
 [data-theme=dark] .theme .moon{display:block}
 
-/* Hero: the mark beside the headline */
-.hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:48px;align-items:center;padding:72px 0 96px}
-.hero h1{font-size:clamp(40px,4.8vw,60px);line-height:1;letter-spacing:-.045em;font-weight:600;margin:0 0 14px}
-.lede{font-size:20px;line-height:1.5;color:var(--muted);margin:0;max-width:34ch}
-.construct{margin:0}
-.construct svg{width:100%;height:auto;display:block;overflow:visible}
-.construct figcaption{font-size:14px;line-height:1.5;color:var(--muted);margin-top:18px;max-width:44ch}
+/* Hero: one centred column, mark over headline over lede */
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:min(calc(100svh - 56px),760px);padding:56px 0 72px}
+.hero-mark{height:112px;width:auto;display:block;margin:0 0 40px}
+.hero h1{font-size:clamp(40px,5.6vw,68px);line-height:1.02;letter-spacing:-.045em;font-weight:600;margin:0 0 20px;max-width:16ch;text-wrap:balance}
+.lede{font-size:20px;line-height:1.5;color:var(--muted);margin:0;max-width:52ch;text-wrap:balance}
 .ink{fill:var(--ink)}
 @media (prefers-reduced-motion:no-preference){
 .ink{animation:fade .8s ease-out .2s both}
@@ -88,8 +86,9 @@ a{color:inherit}
 .foot-cols a:hover{color:var(--ink)}
 
 @media (max-width:900px){
-.hero,.product,.product.agora,.closing{grid-template-columns:1fr}
-.hero{gap:40px;padding:48px 0 72px}
+.product,.product.agora,.closing{grid-template-columns:1fr}
+.hero{min-height:0;padding:48px 0 64px}
+.hero-mark{height:80px;margin-bottom:28px}
 .product{gap:44px;padding:64px 0}
 .product.agora .shot{order:2}
 .closing{gap:40px;padding:56px 0 72px}
