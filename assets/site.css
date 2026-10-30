@@ -37,7 +37,6 @@ a{color:inherit}
 .construct figcaption{font-size:14px;line-height:1.5;color:var(--muted);margin-top:18px;max-width:44ch}
 .ink{fill:var(--ink)}
 .labels text{font:500 13px Geist,system-ui,sans-serif;fill:var(--muted)}
-.labels .glyph{fill:none;stroke:var(--bronze);stroke-width:1.6;stroke-linejoin:round}
 @media (prefers-reduced-motion:no-preference){
 .ink{animation:fade .8s ease-out .2s both}
 .labels{animation:fade .6s ease-out .9s both}
