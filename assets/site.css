@@ -1,4 +1,4 @@
-/* Daedalus Data Labs. Parent brand: one ink, one ground (BRAND.md). Bronze appears only in the construction drawing; colour elsewhere belongs to the products. */
+/* Daedalus Data Labs. Parent brand: one ink, one ground (BRAND.md). Colour belongs to the products. */
 :root{--ink:#0B1526;--ground:#F4F3EF;--paper:#FBFAF7;--line:#E3E0D8;--guide:rgba(11,21,38,.22);--muted:rgba(11,21,38,.66);
 --bronze:#B9822F;--bronze-wash:#EFE3CF;--agora-a:#2A5FD8;--agora-b:#7A4DFF;--agora-c:#FF6A52;--glass-hi:rgba(255,255,255,.7);--glass-edge:rgba(11,21,38,.10);--shadow:0 1px 2px rgba(11,21,38,.06),0 18px 40px -12px rgba(11,21,38,.22)}
 [data-theme=dark]{--ink:#F4F3EF;--ground:#0B1526;--paper:#101C30;--line:#1E2A3C;--guide:rgba(244,243,239,.24);--muted:rgba(244,243,239,.66);--bronze-wash:#2A2318;--glass-hi:rgba(255,255,255,.08);--glass-edge:rgba(255,255,255,.12);--shadow:0 1px 2px rgba(0,0,0,.3),0 18px 40px -12px rgba(0,0,0,.6)}
@@ -30,7 +30,7 @@ a{color:inherit}
 [data-theme=dark] .theme .sun,[data-theme=dark] .theme .rays{display:none}
 [data-theme=dark] .theme .moon{display:block}
 
-/* Hero: the mark, drawn from its construction */
+/* Hero: the mark beside the headline */
 .hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:48px;align-items:center;padding:72px 0 96px}
 .hero h1{font-size:clamp(40px,4.8vw,60px);line-height:1;letter-spacing:-.045em;font-weight:600;margin:0 0 14px}
 .lede{font-size:20px;line-height:1.5;color:var(--muted);margin:0;max-width:34ch}
@@ -38,10 +38,8 @@ a{color:inherit}
 .construct svg{width:100%;height:auto;display:block;overflow:visible}
 .construct figcaption{font-size:14px;line-height:1.5;color:var(--muted);margin-top:18px;max-width:44ch}
 .ink{fill:var(--ink)}
-.labels text{font:500 13px Geist,system-ui,sans-serif;fill:var(--muted)}
 @media (prefers-reduced-motion:no-preference){
 .ink{animation:fade .8s ease-out .2s both}
-.labels{animation:fade .6s ease-out .9s both}
 }
 @keyframes fade{from{opacity:0}}
 
