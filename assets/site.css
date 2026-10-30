@@ -9,8 +9,10 @@ a{color:inherit}
 :focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}
 .nav,main,.foot{max-width:1160px;margin:0 auto;padding-left:32px;padding-right:32px}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-top:20px;padding-bottom:20px;position:sticky;top:0;z-index:10}
-.nav::before{content:"";position:absolute;inset:0 calc(50% - 50vw);background:var(--ground);border-bottom:1px solid transparent;transition:border-color .2s;z-index:-1}
-.nav.stuck::before{border-bottom-color:var(--line)}
+.nav::before{content:"";position:absolute;inset:0 calc(50% - 50vw);background:var(--ground);z-index:-1}
+/* content fades out as it passes under the pinned header instead of being cut at an edge */
+.nav::after{content:"";position:absolute;left:calc(50% - 50vw);right:calc(50% - 50vw);top:100%;height:48px;background:linear-gradient(var(--ground),color-mix(in srgb,var(--ground) 0%,transparent));pointer-events:none;opacity:0;transition:opacity .25s}
+.nav.stuck::after{opacity:1}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
 .mark{height:35px;width:auto;display:block}
 .mark.small{height:24px}
