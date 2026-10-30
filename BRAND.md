@@ -1,31 +1,41 @@
-# The ddl mark
+# The Daedalus mark
 
-Every dimension of the mark comes from one unit, **u**, the stroke width. Nothing in it is
-set by eye. `assets/ddl-master-ink.svg` is the source; every other file is rendered from it.
+Two wings, each laid feather by feather "in due order, from small to large", the way Ovid
+describes Daedalus building them (*Metamorphoses* 8). Read in Daedalus's own alphabet, the mark
+spells the company: each wing is a **Δ** (delta, D), and the two together form a **Λ** (lambda, L).
+**ΔΔΛ** is Daedalus Data Labs.
 
-| Element | Size | Why |
+`assets/daedalus-master-ink.svg` is the source. Every other file is rendered from it.
+
+## Construction
+
+| Element | Rule | Why |
 |---|---|---|
-| Stroke | u | One weight everywhere, so the mark reads as one drawing, not assembled parts. |
-| Counter | radius u | A bowl whose ring is exactly one stroke thick needs a counter of u inside an outer radius of 2u. |
-| Bowl | radius 2u (x-height 4u) | The ring's thickness, 2u − u, equals the stroke. |
-| Stem | u wide | The stem is the bowl's own right-hand stroke carried up, so the bowl and stem share an edge and meet without a seam. |
-| Ascender | 6u tall | The stem rises one bowl radius (2u) above the bowl. |
-| Letter gap | u/2, all three | One rule for every space, measured at the nearest point. |
-| Whole mark | 10u × 6u (5 : 3) | Follows from the above: two 4u d's, one u l, two u/2 gaps. |
-| Fill | solid, one ink | Ink `#0B1526` on marble `#F4F3EF`, or reversed. No cut-outs, gradients or outlines, so it holds at any size. |
+| Outline | A Λ: an equilateral triangle (60° sides) with a 30° underside notch | The wings together are the L; the notch turns a static triangle into a craft in flight. |
+| Wings | Each half is a triangle: outer tip, apex, notch | Each wing is a Δ, a D. |
+| Feathers | Three per wing, shortest outside, longest at the body | Ovid's order: small to large. |
+| Feather tops | Follow a gentle arc rather than the straight 60° side | Ovid: he "bent them to the shape of birds". |
+| Gaps | One width everywhere, including the body between the wings | One rule for every space. |
+| Fill | Solid, one ink: `#0B1526` on marble `#F4F3EF`, or reversed | Holds at every size. Bronze `#B07A2E` is used only in construction drawings. |
 
-The SVG has no padding: its edges are the ink's edges. Clear space is supplied by the layout
-and is at least **2u** on every side.
+The SVG viewBox is cropped to the ink (`0 5.26 200 167.94`): no padding. Clear space is
+supplied by the layout and is at least one feather width on every side.
+
+## Lockup
+
+The mark sits to the left of the name, set in two lines: **Daedalus** (Geist SemiBold) over
+**Data Labs** (Geist Regular, muted). The mark's height equals the height of that two-line block,
+so the mark and the name read as one unit.
 
 ## Sizes
 
-- The full mark is used at 24 px tall and above.
-- Below that (favicons) it is the single **d**: the first letter, the same geometry, 4u × 6u.
-- App tiles are 16u square with the mark centred (`ddl-tile-ink-on-marble-512.png`,
-  `apple-touch-icon.png`); favicon tiles are 8u square with the d centred.
+- The lockup is used where the name is at least 16 px tall.
+- The mark alone is used for app icons and favicons, centred on a marble tile at 62% of the
+  tile's width.
 
 ## Files
 
-- `ddl-master-ink.svg`, `ddl-master-reversed.svg`: the source, viewBox `0 0 300 180` (u = 30).
-- `ddl-master-ink.png`, `ddl-master-reversed.png`: 9000 × 5400, transparent, cropped to the ink.
-- `ddl-mark-ink.svg`, `ddl-mark-reversed.svg`, `ddl-d-ink.svg`: for the web.
+- `daedalus-master-ink.svg`, `daedalus-master-reversed.svg`: the source.
+- `daedalus-master-ink.png`, `daedalus-master-reversed.png`: 7600 × 6382, transparent, cropped to the ink.
+- `daedalus-mark-ink.svg`, `daedalus-mark-reversed.svg`: for the web.
+- `daedalus-tile-512.png`, `apple-touch-icon.png`, `favicon-32.png`, `favicon-16.png`, `og.png`.
