@@ -1,67 +1,171 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Daedalus Data Labs</title>
-<meta name="description" content="Daedalus Data Labs is an independent software studio focused on quantitative finance. Maker of Meridian.">
+<meta name="description" content="Daedalus Data Labs makes Meridian, which grades US-listed stocks and funds from 0 to 10 and publishes its method, and Agora, a social network open only to people with a verified US university address.">
 <meta property="og:title" content="Daedalus Data Labs">
-<meta property="og:description" content="Quantitative software for the modern investor.">
+<meta property="og:description" content="The company behind Meridian and Agora.">
 <meta property="og:image" content="https://daedalusdatalabs.com/assets/og.png">
 <meta property="og:url" content="https://daedalusdatalabs.com">
-<meta name="theme-color" content="#0B1526">
+<meta name="theme-color" content="#F4F3EF">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add('js');try{if(localStorage.getItem('daedalus-theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}</script>
 </head>
 <body>
 <header class="nav">
   <a class="brand" href="/" aria-label="Daedalus Data Labs home">
-    <svg class="mark" viewBox="0 0 276 200" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M4 124 A56 56 0 1 0 116 124 A56 56 0 1 0 4 124 Z M34 124 A26 26 0 1 1 86 124 A26 26 0 1 1 34 124 Z M86 20 H116 V109.1676 A56 56 0 0 0 115 113.4643 A56 56 0 0 1 116 124 A56 56 0 0 1 115 134.5357 A56 56 0 0 0 116 138.8324 V180 H86 Z M114 124 A56 56 0 1 0 226 124 A56 56 0 1 0 114 124 Z M144 124 A26 26 0 1 1 196 124 A26 26 0 1 1 144 124 Z M196 20 H226 V180 H196 Z M242 20 H272 V180 H242 Z"></path></svg>
-    <span class="brand-name">Daedalus <span class="brand-sub">Data Labs</span></span>
+    <svg class="mark" viewBox="0 5.26 200 167.94" aria-hidden="true"><path fill="currentColor" d="M0 173.2 L25.83 158.29 L25.83 115.4 L0 173.2 Z M34.83 153.09 L60.67 138.17 L60.67 51.13 L34.83 96.87 Z M69.67 132.98 L95.5 118.06 L95.5 5.26 L69.67 37.87 Z M104.5 118.06 L130.33 132.98 L130.33 37.87 L104.5 5.26 Z M139.33 138.17 L165.17 153.09 L165.17 96.87 L139.33 51.13 Z M174.17 158.29 L200 173.2 L174.17 115.4 Z"/></svg>
+    <span class="brand-name"><span class="brand-main">Daedalus</span><span class="brand-sub">Data Labs</span></span>
   </a>
-  <nav class="links">
-    <a href="#product">Product</a>
+  <nav class="links" aria-label="Primary">
+    <a href="#meridian">Meridian</a>
+    <a href="#agora">Agora</a>
     <a href="#contact">Contact</a>
+    <button class="theme" type="button" aria-label="Switch to dark mode" title="Switch to dark mode">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle class="sun" cx="12" cy="12" r="4.5"/><path class="rays" d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/><path class="moon" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>
+    </button>
   </nav>
 </header>
 
 <main>
   <section class="hero">
-    <h1>Quantitative software for the modern investor.</h1>
-    <p>Daedalus Data Labs builds rigorous, research-grade financial tools that turn market complexity into clear, defensible decisions.</p>
+    <div class="hero-copy">
+      <h1>We make Meridian and Agora.</h1>
+      <p class="lede">Meridian grades US-listed stocks and funds from 0 to 10 and publishes how each grade is calculated. Agora is a social network open only to people with a verified US university address, where each campus sees only its own posts.</p>
+    </div>
+    <figure class="construct">
+      <svg viewBox="-92 -34 384 214" role="img" aria-labelledby="construct-cap">
+        <path class="ink" d="M0 173.2 L25.83 158.29 L25.83 115.4 L0 173.2 Z M34.83 153.09 L60.67 138.17 L60.67 51.13 L34.83 96.87 Z M69.67 132.98 L95.5 118.06 L95.5 5.26 L69.67 37.87 Z M104.5 118.06 L130.33 132.98 L130.33 37.87 L104.5 5.26 Z M139.33 138.17 L165.17 153.09 L165.17 96.87 L139.33 51.13 Z M174.17 158.29 L200 173.2 L174.17 115.4 Z"/>
+        <g class="labels">
+          <g transform="translate(-86 92)"><text x="0" y="11">Daedalus</text></g>
+          <g transform="translate(214 92)"><text x="0" y="11">Data</text></g>
+          <g transform="translate(100 -26)"><text x="0" y="11" text-anchor="middle">Labs</text></g>
+        </g>
+      </svg>
+      <figcaption id="construct-cap">The mark is two wings. Each is a Greek delta (Δ), for Daedalus and Data; together they form a lambda (Λ), for Labs. The feathers run from shortest to longest, the order Ovid gives for the wings Daedalus built.</figcaption>
+    </figure>
   </section>
 
-  <section class="block">
-    <h2>Who We Are</h2>
-    <p>Daedalus Data Labs, LLC is an independent software studio focused on quantitative finance. We design analytical tools that bring institutional-grade factor research, portfolio modeling, and market intelligence to individual investors. The tools are precise, transparent, and honest about their assumptions.</p>
+  <section class="product meridian" id="meridian">
+    <div class="reveal product-copy">
+      <img class="product-icon" src="/assets/products/meridian.png" width="64" height="64" alt="">
+      <h2>Meridian</h2>
+      <p class="tagline">A 0 to 10 grade for US-listed stocks and funds.</p>
+      <ol class="method">
+        <li><span>Each name is graded on six factors: valuation, growth, profitability, momentum, analyst expectations and financial health.</span></li>
+        <li><span>Every metric is scored against companies in the same sector, then ranked across all rated names.</span></li>
+        <li><span>A name missing any factor gets no overall grade. Meridian leaves it blank rather than estimate it.</span></li>
+        <li><span>Grades are rebuilt each morning and kept, so every change has a date.</span></li>
+      </ol>
+      <div class="actions">
+        <a class="button" href="https://meridian.daedalusdatalabs.com">Open Meridian</a>
+        <a class="text-link" href="https://meridian.daedalusdatalabs.com/methodology">Read the method</a>
+      </div>
+    </div>
+    <figure class="reveal shot browser">
+      <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>meridian.daedalusdatalabs.com/stock/NVDA</span></div>
+      <img src="/assets/products/meridian-nvda.webp" width="1520" height="1440" loading="lazy" alt="Meridian's page for NVIDIA: a Meridian Score of 9.2 out of 10 and six factor grades, from Valuation 5.3 to Profitability 9.8.">
+      <figcaption>NVIDIA on Meridian, 29 October 2026.</figcaption>
+    </figure>
   </section>
 
-  <section class="block" id="product">
-    <h2>Our Product</h2>
-    <h3>Meridian</h3>
-    <p>A quantitative research workspace: factor-grade every stock with the Meridian Score, screen the market by what matters, and X-ray your portfolio's real risk with Monte Carlo, efficient-frontier, and factor analysis.</p>
-    <a class="button" href="https://meridian.daedalusdatalabs.com">Open Meridian <span aria-hidden="true">&rarr;</span></a>
+  <section class="product agora" id="agora">
+    <figure class="reveal shot phone">
+      <img src="/assets/products/agora-home.webp" width="780" height="1688" loading="lazy" alt="Agora's front page on a phone: Agora is a social network for your campus, with buttons to create an account or sign in.">
+      <figcaption>Agora's front page.</figcaption>
+    </figure>
+    <div class="reveal product-copy">
+      <img class="product-icon" src="/assets/products/agora.svg" width="64" height="64" alt="">
+      <h2>Agora</h2>
+      <p class="tagline">A social network for one campus at a time.</p>
+      <ol class="method">
+        <li><span>Every member has verified a US university address.</span></li>
+        <li><span>Posts, groups and student organizations are visible only to members of the same campus.</span></li>
+        <li><span>The feed is newest first. Posts from your groups, friends and people you follow are moved up, and the Latest view shows strict time order.</span></li>
+        <li><span>It is free, and joining takes about two minutes.</span></li>
+      </ol>
+      <div class="actions">
+        <a class="button" href="https://agoraoncampus.com">Visit Agora</a>
+        <a class="text-link" href="https://agoraoncampus.com/universities">See the campuses</a>
+      </div>
+    </div>
   </section>
 
-  <section class="block" id="contact">
-    <h2>Contact</h2>
-    <p>General inquiries: <a href="mailto:contact@daedalusdatalabs.com">contact@daedalusdatalabs.com</a></p>
+  <section class="closing">
+    <div id="about">
+      <h2>About</h2>
+      <p>Daedalus Data Labs, LLC builds and runs Meridian and Agora. Both publish how they work: Meridian its grading method, Agora the order of its feed. The name comes from Daedalus, the craftsman of Greek myth who built the labyrinth and the wings.</p>
+    </div>
+    <div id="contact">
+      <h2>Contact</h2>
+      <p><a href="mailto:contact@daedalusdatalabs.com">contact@daedalusdatalabs.com</a></p>
+    </div>
   </section>
 </main>
 
 <footer class="foot">
-  <svg class="mark small" viewBox="0 0 276 200" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M4 124 A56 56 0 1 0 116 124 A56 56 0 1 0 4 124 Z M34 124 A26 26 0 1 1 86 124 A26 26 0 1 1 34 124 Z M86 20 H116 V109.1676 A56 56 0 0 0 115 113.4643 A56 56 0 0 1 116 124 A56 56 0 0 1 115 134.5357 A56 56 0 0 0 116 138.8324 V180 H86 Z M114 124 A56 56 0 1 0 226 124 A56 56 0 1 0 114 124 Z M144 124 A26 26 0 1 1 196 124 A26 26 0 1 1 144 124 Z M196 20 H226 V180 H196 Z M242 20 H272 V180 H242 Z"></path></svg>
-  <p>&copy; 2026 Daedalus Data Labs, LLC. All rights reserved.</p>
-  <nav class="links">
-    <a href="https://meridian.daedalusdatalabs.com/terms">Terms</a>
-    <a href="https://meridian.daedalusdatalabs.com/privacy">Privacy</a>
-    <a href="mailto:contact@daedalusdatalabs.com">Email</a>
+  <div class="foot-brand">
+    <svg class="mark small" viewBox="0 5.26 200 167.94" aria-hidden="true"><path fill="currentColor" d="M0 173.2 L25.83 158.29 L25.83 115.4 L0 173.2 Z M34.83 153.09 L60.67 138.17 L60.67 51.13 L34.83 96.87 Z M69.67 132.98 L95.5 118.06 L95.5 5.26 L69.67 37.87 Z M104.5 118.06 L130.33 132.98 L130.33 37.87 L104.5 5.26 Z M139.33 138.17 L165.17 153.09 L165.17 96.87 L139.33 51.13 Z M174.17 158.29 L200 173.2 L174.17 115.4 Z"/></svg>
+    <p>&copy; 2026 Daedalus Data Labs, LLC</p>
+  </div>
+  <nav class="foot-cols" aria-label="Footer">
+    <div><h3>Meridian</h3><a href="https://meridian.daedalusdatalabs.com/terms">Terms</a><a href="https://meridian.daedalusdatalabs.com/privacy">Privacy</a></div>
+    <div><h3>Agora</h3><a href="https://agoraoncampus.com/guidelines">Guidelines</a><a href="https://agoraoncampus.com/accessibility">Accessibility</a></div>
+    <div><h3>Company</h3><a href="mailto:contact@daedalusdatalabs.com">Email</a></div>
   </nav>
 </footer>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.querySelector('.theme'), meta=document.querySelector('meta[name=theme-color]');
+  var still=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function apply(t){root.dataset.theme=t;var d=t==='dark';btn.setAttribute('aria-label',d?'Switch to light mode':'Switch to dark mode');btn.title=btn.getAttribute('aria-label');meta.content=d?'#0B1526':'#F4F3EF';}
+  apply(root.dataset.theme||'light');
+  btn.addEventListener('click',function(){
+    var t=root.dataset.theme==='dark'?'light':'dark';
+    try{localStorage.setItem('daedalus-theme',t)}catch(e){}
+    if(still||!document.startViewTransition){apply(t);return;}
+    // the new theme spreads out from the button that was pressed
+    var r=btn.getBoundingClientRect(), x=r.left+r.width/2, y=r.top+r.height/2;
+    var end=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
+    document.startViewTransition(function(){apply(t)}).ready.then(function(){
+      root.animate({clipPath:['circle(0px at '+x+'px '+y+'px)','circle('+end+'px at '+x+'px '+y+'px)']},
+        {duration:520,easing:'cubic-bezier(.4,0,.2,1)',pseudoElement:'::view-transition-new(root)'});
+    });
+  });
+  // pinned header: content fades beneath it once the page has scrolled
+  var nav=document.querySelector('.nav');
+  function stuck(){nav.classList.toggle('stuck',scrollY>2)}
+  addEventListener('scroll',stuck,{passive:true}); stuck();
+  // in-page links glide to their section and stop just below the pinned header
+  var glide=0;
+  function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+  function stop(){cancelAnimationFrame(glide);glide=0}
+  ['wheel','touchstart','keydown'].forEach(function(e){addEventListener(e,stop,{passive:true})});
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    var el=document.getElementById(a.getAttribute('href').slice(1)); if(!el)return;
+    a.addEventListener('click',function(ev){
+      ev.preventDefault(); stop();
+      var from=scrollY, to=Math.min(el.getBoundingClientRect().top+from-nav.offsetHeight-16,root.scrollHeight-innerHeight), d=to-from;
+      history.pushState(null,'',a.hash);
+      if(still||!d){scrollTo(0,to);return;}
+      var dur=Math.min(1100,Math.max(500,Math.abs(d)*.45)), t0=performance.now();
+      (function step(now){var t=Math.min(1,(now-t0)/dur);scrollTo(0,from+d*ease(t));if(t<1)glide=requestAnimationFrame(step);else glide=0;})(t0);
+    });
+  });
+  // product bands enter once as they reach the viewport; method steps follow in order
+  var items=document.querySelectorAll('.reveal');
+  if(still||!('IntersectionObserver' in window)){items.forEach(function(n){n.classList.add('in')});return;}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{rootMargin:'0px 0px -12% 0px',threshold:.15});
+  items.forEach(function(n){io.observe(n)});
+})();
+</script>
 </body>
 </html>
