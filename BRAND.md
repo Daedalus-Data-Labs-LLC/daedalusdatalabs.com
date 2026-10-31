@@ -26,11 +26,21 @@ supplied by the layout and is at least one feather width on every side.
 
 The mark sits to the left of the name, set in two lines: **Daedalus** (Geist SemiBold) over
 **Data Labs** (Geist Regular, muted). The mark's height equals the height of that two-line block,
-so the mark and the name read as one unit.
+so the mark and the name read as one unit. Line height is 1, so the block is the two font sizes
+plus the gap between them.
+
+| Use | Mark | Daedalus | Data Labs | Line gap | Mark to name | Block |
+|---|---|---|---|---|---|---|
+| Site header | 36 × 30 (feathers 5) | 18 px | 11.5 px | 0.5 px | 10 px | 30 px |
+| OG image | 54 × 44 (feathers 7, gaps 2-2-4-2-2) | 26 px | 17 px | 1 px | 14 px | 44 px |
+
+To set a new size, choose the mark height from a feather width that lands on whole pixels, then
+size the two lines at about 3:2 (Daedalus : Data Labs) so they fill that height.
 
 ## Sizes
 
-- The lockup is used where the name is at least 16 px tall.
+- The lockup is used where **Daedalus** is at least 16 px. Below that, use the mark alone.
+- Footer: the mark alone, 30 × 24 (feathers 4), beside the copyright line; it is not a lockup.
 - App icons (apple-touch 180 px, 512 tile): the mark alone on a marble tile at 73% of the tile's
   width, drawn on the pixel grid with the favicon's proportions (gaps a quarter of a feather, the
   centre gap doubled). 180 px: feathers 18, gaps 4-4-8-4-4.

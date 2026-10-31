@@ -18,7 +18,7 @@ a{color:inherit}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
 .mark{width:36px;height:30px;display:block}
 .mark.small{width:30px;height:24px}
-.brand-name{display:flex;flex-direction:column;gap:1px;line-height:1}
+.brand-name{display:flex;flex-direction:column;gap:.5px;line-height:1}
 .brand-main{font-weight:600;font-size:18px;letter-spacing:-.02em}
 .brand-sub{font-weight:400;font-size:11.5px;color:var(--muted)}
 .links{display:flex;align-items:center;gap:24px;font-size:15px;font-weight:500}
