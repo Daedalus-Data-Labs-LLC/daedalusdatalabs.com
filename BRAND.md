@@ -1,59 +1,59 @@
 # The Daedalus mark
 
-Two wings, each laid feather by feather "in due order, from small to large", the way Ovid
-describes Daedalus building them (*Metamorphoses* 8). Read in Daedalus's own alphabet, the mark
-spells the company: each wing is a **Δ** (delta, D), and the two together form a **Λ** (lambda, L).
-**ΔΔΛ** is Daedalus Data Labs.
+Daedalus built the labyrinth, so the mark is drawn like one: nested strokes with narrow
+passages between them. It spells the company. On the outside are an **L** (stem and foot) and a
+**D** (bowl and top bar), split by one cut. Inside them sits a second, whole **D**. That gives
+Dae**D**a**L**us, and **D**ata **L**abs.
 
-`assets/daedalus-master-ink.svg` is the source. Every other file is rendered from it.
+`scripts/mark.py` is the source. Every brand file is rendered from it by `scripts/brand.py`.
 
 ## Construction
 
+The mark is built on a grid where the stroke and the gap are the same width, 4 units. The ink box is 42 × 40.
+
 | Element | Rule | Why |
 |---|---|---|
-| Outline | A Λ: an equilateral triangle (60° sides) with a 30° underside notch | The wings together are the L; the notch turns a static triangle into a craft in flight. |
-| Wings | Each half is a triangle: outer tip, apex, notch | Each wing is a Δ, a D. |
-| Feathers | Three per wing, shortest outside, longest at the body | Ovid's order: small to large. |
-| Feather tops | Follow a gentle arc rather than the straight 60° side | Ovid: he "bent them to the shape of birds". |
-| Gaps | A quarter of a feather between feathers; doubled at the body, where the wings part | The wider centre gap keeps the two Δs readable as separate wings at every size, down to the 16 px favicon. |
-| Fill | Solid, one ink: `#0B1526` on marble `#F4F3EF`, or reversed | Holds at every size. Bronze `#B07A2E` is used only in construction drawings. |
+| Stroke and gap | Both 4 units, everywhere. Diagonal gaps are 4 units measured square to the cut. | Even spacing makes the nesting read as a single labyrinth, not as three separate letters. |
+| L | Stem and foot, the full height and most of the width of the mark | The outer frame. Labs holds the rest. |
+| Outer D | Bowl and top bar, sharing the L's stem as its own | The second letter of the outer pair. |
+| Inner D | A closed D, 4 units inside everything else | The whole letter at the centre of the labyrinth. |
+| Cuts | All at 45° and parallel: the top of the L's stem, the end of the outer D's top bar, and the cut through the foot | One angle throughout, like letters cut in stone. The two openings, top-left and bottom, are the labyrinth's entrances. |
+| Fill | Solid, one ink: `#0B1526` on marble `#F4F3EF`, or reversed | Holds at every size. |
 
-The SVG viewBox is cropped to the ink (`0 0 150 126`): no padding. Feathers are 20 wide, gaps 5-5-10-5-5,
-so every vertical edge falls on a whole unit. Clear space is
-supplied by the layout and is at least one feather width on every side.
+The geometry takes four numbers: stroke `s`, gap `g`, inner counter height `c`, and the inner D's
+straight run `k`. The master uses `s = g = 4`, `c = 16`, `k = 10`. The SVG viewBox is cropped to
+the ink (`0 0 42 40`), with no padding. The layout provides clear space of at least one stroke width on every side.
 
 ## Lockup
 
-The mark sits to the left of the name, set in two lines: **Daedalus** (Geist SemiBold) over
-**Data Labs** (Geist Regular, muted). The mark's height equals the height of that two-line block,
-so the mark and the name read as one unit. Line height is 1, so the block is the two font sizes
-plus the gap between them.
+The mark sits to the left of the name, which is set in two lines: **Daedalus** (Geist SemiBold) over
+**Data Labs** (Geist Regular, muted). The mark is the same height as the two-line block.
 
 | Use | Mark | Daedalus | Data Labs | Line gap | Mark to name | Block |
 |---|---|---|---|---|---|---|
-| Site header | 36 × 30 (feathers 5) | 18 px | 11.5 px | 0.5 px | 10 px | 30 px |
-| OG image | 54 × 44 (feathers 7, gaps 2-2-4-2-2) | 26 px | 17 px | 1 px | 14 px | 44 px |
+| Site header | 31.5 × 30 (stroke 3) | 18 px | 11.5 px | 0.5 px | 10 px | 30 px |
+| OG image | 42 × 40 (stroke 4) | 24 px | 15 px | 1 px | 14 px | 40 px |
 
-To set a new size, choose the mark height from a feather width that lands on whole pixels, then
-size the two lines at about 3:2 (Daedalus : Data Labs) so they fill that height.
+To set a new size, pick a scale that puts the stroke on whole pixels (0.25 per unit gives a
+1 px stroke), then size the two lines at about 3:2 so they fill the mark's height.
 
 ## Sizes
 
 - The lockup is used where **Daedalus** is at least 16 px. Below that, use the mark alone.
-- Footer: the mark alone, 30 × 24 (feathers 4), beside the copyright line; it is not a lockup.
-- App icons (apple-touch 180 px, 512 tile): the mark alone on a marble tile at 73% of the tile's
-  width, drawn on the pixel grid with the favicon's proportions (gaps a quarter of a feather, the
-  centre gap doubled). 180 px: feathers 18, gaps 4-4-8-4-4.
-- Favicons: the mark alone on a transparent ground, redrawn on the pixel grid so each feather
-  and gap lands on whole pixels (16 px: feathers 1-2-2-2-2-1, gaps 1-1-2-1-1; 32 px: feathers 4,
-  gaps 1-1-2-1-1). `favicon.svg` uses the 16 px drawing and switches to marble in dark mode.
-- On the site every mark uses the same proportions, drawn at the size it renders: header 36x30
-  (feathers 5), footer 30x24 (feathers 4), splash 150x126 (feathers 20, gaps 5-5-10-5-5; shown at
-  0.6x on phones so 12/3/6 stay on whole pixels).
+- On the site every mark is drawn at a whole-pixel stroke: header 31.5 × 30 (stroke 3), footer
+  21 × 20 (stroke 2, the mark alone beside the copyright line), splash 126 × 120 (stroke 12),
+  splash on phones 84 × 80 (stroke 8).
+- App icons: the mark alone on a marble tile, about 70% of the tile's width. 180 px: 126 × 120, stroke 12.
+  512 px: 378 × 360, stroke 36.
+- Favicons: the mark alone on a transparent ground. 32 px and 48 px use the master drawing at
+  0.75 and 1 px per unit. 16 px is redrawn on whole pixels with `s = g = 2`, `c = 2`, `k = 3`, so the strokes and gaps stay equal and sharp.
+  `favicon.svg` uses the 16 px drawing and switches to marble in dark mode.
 
 ## Files
 
-- `daedalus-master-ink.svg`, `daedalus-master-reversed.svg`: the source.
-- `daedalus-master-ink.png`, `daedalus-master-reversed.png`: 7600 × 6384, transparent, cropped to the ink.
+- `scripts/mark.py`: the geometry. `scripts/brand.py` renders everything below except `og.png`.
+- `daedalus-master-ink.svg`, `daedalus-master-reversed.svg`: the master drawing.
+- `daedalus-master-ink.png`, `daedalus-master-reversed.png`: 7560 × 7200, transparent, cropped to the ink (stroke 720).
 - `daedalus-mark-ink.svg`, `daedalus-mark-reversed.svg`: for the web.
-- `daedalus-tile-512.png`, `apple-touch-icon.png`, `favicon-32.png`, `favicon-16.png`, `/favicon.svg`, `/favicon.ico` (16/32/48), `og.png`.
+- `daedalus-tile-512.png`, `apple-touch-icon.png`, `favicon-32.png`, `favicon-16.png`, `/favicon.svg`, `/favicon.ico` (16/32/48).
+- `og.png`: 1200 × 630. Lockup top-left, headline, mark at stroke 28 on the right.
