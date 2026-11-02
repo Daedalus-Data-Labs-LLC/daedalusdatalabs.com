@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/site.css?v=2">
 <script>document.documentElement.classList.add('js');try{if(localStorage.getItem('daedalus-theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}</script>
 </head>
 <body>
@@ -44,7 +44,11 @@
 
 <main>
   <section class="hero">
-    <svg class="hero-mark" viewBox="0 0 42 40" aria-hidden="true"><path class="ink" d="M0 0L4 4L4 36L16.343 36L20.343 40L0 40ZM25.662 39.662A20 20 0 0 0 22 0L5.657 0L9.657 4L22 4A16 16 0 0 1 22 36ZM8 8L22 8A12 12 0 0 1 22 32L8 32ZM12 12L12 28L22 28A8 8 0 0 0 22 12Z"/></svg>
+    <div class="hero-art" aria-hidden="true">
+      <!-- the construction grid the mark is drawn on: one square per stroke width, shown while the mark assembles -->
+      <svg class="hero-grid" viewBox="-21 -20 84 80"><defs><pattern id="grid" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M4 0H0V4"/></pattern><radialGradient id="grid-fade"><stop offset=".35" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><mask id="grid-mask"><rect x="-21" y="-20" width="84" height="80" fill="url(#grid-fade)"/></mask></defs><rect x="-21" y="-20" width="84" height="80" fill="url(#grid)" mask="url(#grid-mask)"/><path class="cut" d="M-6 -6L14 14M-.343 -6L19.657 14M9.172 26L31.172 48"/></svg>
+      <svg class="hero-mark" viewBox="0 0 42 40"><g class="ink"><path class="part-l" d="M0 0L4 4L4 36L16.343 36L20.343 40L0 40Z"/><path class="part-d" d="M25.662 39.662A20 20 0 0 0 22 0L5.657 0L9.657 4L22 4A16 16 0 0 1 22 36Z"/><path class="part-i" d="M8 8L22 8A12 12 0 0 1 22 32L8 32ZM12 12L12 28L22 28A8 8 0 0 0 22 12Z"/></g></svg>
+    </div>
     <h1>We grade stocks and run a campus social network.</h1>
     <p class="lede">Meridian grades US-listed stocks and funds from 0 to 10 and publishes how each grade is calculated. Agora is a social network open only to people with a verified US university address, where each campus sees only its own posts.</p>
   </section>
@@ -66,15 +70,17 @@
       </div>
     </div>
     <figure class="reveal shot browser">
+      <div class="screen" data-tilt="x">
       <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>meridian.daedalusdatalabs.com/stock/NVDA</span></div>
       <img src="/assets/products/meridian-nvda.webp" width="1520" height="1440" loading="lazy" alt="Meridian's page for NVIDIA: a Meridian Score of 9.2 out of 10 and six factor grades, from Valuation 5.3 to Profitability 9.8.">
+      </div>
       <figcaption>NVIDIA on Meridian, 29 October 2026.</figcaption>
     </figure>
   </section>
 
   <section class="product agora" id="agora">
     <figure class="reveal shot phone">
-      <img src="/assets/products/agora-home.webp" width="780" height="1688" loading="lazy" alt="Agora's front page on a phone: Agora is a social network for your campus, with buttons to create an account or sign in.">
+      <img data-tilt="y" src="/assets/products/agora-home.webp" width="780" height="1688" loading="lazy" alt="Agora's front page on a phone: Agora is a social network for your campus, with buttons to create an account or sign in.">
       <figcaption>Agora's front page.</figcaption>
     </figure>
     <div class="reveal product-copy">
@@ -155,6 +161,34 @@
       (function step(now){var t=Math.min(1,(now-t0)/dur);scrollTo(0,from+d*ease(t));if(t<1)glide=requestAnimationFrame(step);else glide=0;})(t0);
     });
   });
+  // the nav marks the section that holds the middle of the screen
+  var links={};document.querySelectorAll('.links a[href^="#"]').forEach(function(a){links[a.hash.slice(1)]=a});
+  if('IntersectionObserver' in window){
+    var spy=new IntersectionObserver(function(es){es.forEach(function(e){var a=links[e.target.dataset.spy];if(a)a.classList.toggle('here',e.isIntersecting)})},{rootMargin:'-45% 0px -50% 0px'});
+    Object.keys(links).forEach(function(id){var s=document.getElementById(id);if(s){s=s.closest('section')||s;s.dataset.spy=id;spy.observe(s)}});
+  }
+  if(!still){
+    // screenshots lie back in perspective and come flat by the time they reach the middle of the screen
+    var tilts=[].slice.call(document.querySelectorAll('[data-tilt]')), queued=0;
+    function lean(){queued=0;tilts.forEach(function(el){
+      var r=el.getBoundingClientRect(), p=Math.max(0,Math.min(1,(innerHeight-r.top)/(innerHeight*.7))), k=1-p*p*(3-2*p);
+      el.style.setProperty('--rx',(el.dataset.tilt==='x'?k*14:k*6)+(+el.dataset.px||0)+'deg');
+      el.style.setProperty('--ry',(el.dataset.tilt==='y'?k*-18:0)+(+el.dataset.py||0)+'deg');
+    })}
+    function queue(){if(!queued)queued=requestAnimationFrame(lean)}
+    addEventListener('scroll',queue,{passive:true});addEventListener('resize',queue);lean();
+    // with a mouse, the screenshot tips a few degrees toward the pointer and a soft light follows it
+    if(matchMedia('(hover:hover) and (pointer:fine)').matches)tilts.forEach(function(el){
+      el.addEventListener('pointermove',function(e){var r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+        el.dataset.px=((.5-y)*5).toFixed(2);el.dataset.py=((x-.5)*7).toFixed(2);
+        el.style.setProperty('--gx',x*100+'%');el.style.setProperty('--gy',y*100+'%');el.classList.add('lit');queue()});
+      el.addEventListener('pointerleave',function(){el.dataset.px=el.dataset.py=0;el.classList.remove('lit');queue()});
+    });
+  }
+  // each band's rule draws once the band arrives
+  var bands=document.querySelectorAll('.product,.closing');
+  if(still||!('IntersectionObserver' in window))bands.forEach(function(n){n.classList.add('seen')});
+  else{var bo=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('seen');bo.unobserve(e.target)}})},{rootMargin:'0px 0px -8% 0px'});bands.forEach(function(n){bo.observe(n)})}
   // product bands enter once as they reach the viewport; method steps follow in order
   var items=document.querySelectorAll('.reveal');
   if(still||!('IntersectionObserver' in window)){items.forEach(function(n){n.classList.add('in')});return;}
