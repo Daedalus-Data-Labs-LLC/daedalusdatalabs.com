@@ -12,7 +12,8 @@ a{color:inherit}
 .nav,main,.foot{max-width:1160px;margin:0 auto;padding-left:32px;padding-right:32px}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-top:12px;padding-bottom:12px;position:sticky;top:0;z-index:10}
 /* liquid glass: content under the pinned header blurs and tints through it; the edge catches light once scrolled */
-.nav::before{content:"";position:absolute;inset:0 calc(50% - 50vw);background:var(--ground);z-index:-1;transition:background .3s,box-shadow .3s}
+.nav::before{content:"";position:absolute;inset:0 calc(50% - 50vw);background:transparent;z-index:-1;transition:background .3s,box-shadow .3s}
+.nav.stuck::before{background:var(--ground)}
 @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.nav.stuck::before{background:color-mix(in srgb,var(--ground) 58%,transparent);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%)}}
 .nav.stuck::before{box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 -1px 0 var(--glass-edge),0 10px 30px -18px rgba(11,21,38,.35)}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
@@ -42,6 +43,25 @@ a{color:inherit}
 .hero-grid{position:absolute;left:50%;top:50%;width:252px;height:240px;transform:translate(-50%,-50%);opacity:0;pointer-events:none;overflow:visible}
 .hero-grid pattern path{fill:none;stroke:var(--bronze);stroke-width:.13}
 .hero-grid .cut{fill:none;stroke:var(--bronze);stroke-width:.14;stroke-dasharray:.6 .5}
+
+/* Depth: a warm light above the hero and a faint bronze floor laid back in perspective behind
+   it, so the page reads as content floating over a room rather than ink on a sheet. Static at
+   rest; with motion allowed the floor drifts slower than the page (script sets --depth). */
+.depth{position:absolute;left:0;right:0;top:0;height:1100px;overflow:hidden;z-index:-1;pointer-events:none}
+.depth::before{content:"";position:absolute;left:50%;top:-24px;width:1400px;height:900px;margin-left:-700px;z-index:-1;pointer-events:none;
+background:radial-gradient(40% 30% at 50% 40%,color-mix(in srgb,var(--bronze) 14%,transparent),transparent 72%)}
+.depth::after{content:"";position:absolute;left:50%;top:150px;width:2400px;height:620px;margin-left:-1200px;z-index:-1;pointer-events:none;
+background-image:linear-gradient(color-mix(in srgb,var(--bronze) 22%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--bronze) 22%,transparent) 1px,transparent 1px);
+background-size:48px 48px;background-position:50% var(--depth,0px);transform:perspective(560px) rotateX(64deg);transform-origin:50% 100%;
+-webkit-mask-image:linear-gradient(to bottom,transparent,#000 42%,#000 68%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 42%,#000 68%,transparent)}
+@media (max-width:900px){.depth::after{top:40px}}
+
+/* Edges: the background shades off toward the corners of the screen, behind everything, fixed
+   to the viewport, so the page sits in a soft frame. The nav is transparent until the page
+   scrolls so the shading reaches the top edge. */
+body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(110% 90% at 50% 42%,transparent 38%,var(--vig) 100%)}
+:root{--vig:rgba(11,21,38,.16)}
+[data-theme=dark]{--vig:rgba(0,0,0,.55)}
 
 /* Products */
 .product{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:64px;align-items:center;padding:88px 0;border-top:1px solid var(--line)}
