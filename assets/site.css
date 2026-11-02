@@ -36,10 +36,12 @@ a{color:inherit}
 .hero h1{font-size:clamp(40px,5.6vw,68px);line-height:1.02;letter-spacing:-.045em;font-weight:600;margin:0 0 20px;max-width:16ch;text-wrap:balance}
 .lede{font-size:20px;line-height:1.5;color:var(--muted);margin:0;max-width:52ch;text-wrap:balance}
 .ink{fill:var(--ink)}
-@media (prefers-reduced-motion:no-preference){
-.ink{animation:fade .8s ease-out .2s both}
-}
-@keyframes fade{from{opacity:0}}
+.hero-art{position:relative;width:126px;height:120px;margin:0 0 40px}
+.hero-art .hero-mark{margin:0;position:relative}
+/* the grid and the 45-degree cut lines the mark is built on; hidden at rest, shown only while it assembles */
+.hero-grid{position:absolute;left:50%;top:50%;width:252px;height:240px;transform:translate(-50%,-50%);opacity:0;pointer-events:none;overflow:visible}
+.hero-grid pattern path{fill:none;stroke:var(--bronze);stroke-width:.13}
+.hero-grid .cut{fill:none;stroke:var(--bronze);stroke-width:.14;stroke-dasharray:.6 .5}
 
 /* Products */
 .product{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:64px;align-items:center;padding:88px 0;border-top:1px solid var(--line)}
@@ -88,7 +90,9 @@ a{color:inherit}
 @media (max-width:900px){
 .product,.product.agora,.closing{grid-template-columns:1fr}
 .hero{min-height:0;padding:48px 0 64px}
-.hero-mark{width:84px;height:80px;margin-bottom:28px}
+.hero-art,.hero-mark{width:84px;height:80px}
+.hero-art{margin-bottom:28px}
+.hero-grid{width:168px;height:160px}
 .product{gap:44px;padding:64px 0}
 .product.agora .shot{order:2}
 .closing{gap:40px;padding:56px 0 72px}
@@ -120,3 +124,45 @@ a{color:inherit}
 .button,.text-link,.links a,.theme{transition:filter .15s,color .15s,background-color .15s}
 }
 
+/* Showmanship, in the brand's own terms: the mark is built on its grid, the products come to rest
+   in perspective, and the lines between sections are drawn rather than switched on. All of it runs
+   once, takes under two seconds, and none of it runs for reduced-motion users. */
+@media (prefers-reduced-motion:no-preference){
+/* hero: the grid comes up, the three letters slide in along it, the grid lifts, then the words sharpen */
+.hero-grid{animation:grid 2.4s cubic-bezier(.4,0,.2,1) .1s both}
+.hero-mark path{animation:part .9s cubic-bezier(.2,.8,.2,1) both}
+.part-l{--from:translate(-6px,0);animation-delay:.35s!important}
+.part-d{--from:translate(6px,0);animation-delay:.5s!important}
+.part-i{--from:scale(.7);transform-box:fill-box;transform-origin:center;animation-delay:.68s!important}
+.hero h1{animation:sharpen .9s cubic-bezier(.2,.7,.2,1) .95s both}
+.hero .lede{animation:sharpen .9s cubic-bezier(.2,.7,.2,1) 1.15s both}
+/* section rules draw outward from the centre as each band arrives */
+.js .product,.js .closing{border-top-color:transparent;position:relative}
+.js .product::before,.js .closing::before{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;background:var(--line);transform:scaleX(0);transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+.js .seen::before{transform:none}
+/* product icons settle with a small overshoot */
+.js .reveal .product-icon{transform:scale(.82);opacity:0;transition:transform .7s cubic-bezier(.34,1.56,.64,1) .1s,opacity .4s ease-out .1s}
+.js .reveal.in .product-icon{transform:none;opacity:1}
+/* screenshots lie back in perspective and come flat as they reach the middle of the screen (script sets --rx/--ry);
+   a fine pointer tips them a few degrees more and a soft light follows it */
+.shot{perspective:1600px}
+[data-tilt]{transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .6s cubic-bezier(.2,.7,.2,1);will-change:transform}
+.screen{position:relative;border-radius:12px}
+.screen::after{content:"";position:absolute;inset:0;border-radius:12px;pointer-events:none;opacity:0;transition:opacity .4s;background:radial-gradient(420px circle at var(--gx,50%) var(--gy,0%),rgba(255,255,255,.22),transparent 60%)}
+.screen.lit::after{opacity:1}
+/* a one-time scan down Meridian's screen as it arrives, in Meridian's bronze */
+.screen::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;z-index:1;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent,var(--bronze) 20%,var(--bronze) 80%,transparent);box-shadow:0 0 18px 2px color-mix(in srgb,var(--bronze) 55%,transparent)}
+.js .reveal.in .screen::before{animation:scan 1.5s cubic-bezier(.45,0,.25,1) .55s both}
+/* Agora's colours drift slowly behind the phone */
+.phone::before{animation:drift 18s ease-in-out infinite alternate}
+/* the nav marks the section on screen */
+.links a{position:relative}
+.links a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:1.5px;border-radius:1px;background:currentColor;transform:scaleX(0);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.links a.here{color:var(--ink)}
+.links a.here::after{transform:none}
+}
+@keyframes grid{0%{opacity:0}22%{opacity:1}62%{opacity:1}100%{opacity:0}}
+@keyframes part{from{opacity:0;transform:var(--from)}}
+@keyframes sharpen{from{opacity:0;filter:blur(8px);transform:translateY(10px)}}
+@keyframes scan{0%{top:0;opacity:0}12%{opacity:1}88%{opacity:1}100%{top:100%;opacity:0}}
+@keyframes drift{from{transform:rotate(-4deg) scale(1)}to{transform:rotate(5deg) scale(1.06) translate(2%,-2%)}}
