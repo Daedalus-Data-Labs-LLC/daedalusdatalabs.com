@@ -23,10 +23,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/assets/site.css?v=2">
+<link rel="stylesheet" href="/assets/site.css?v=3">
 <script>document.documentElement.classList.add('js');try{if(localStorage.getItem('daedalus-theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}</script>
 </head>
 <body>
+<div class="depth" aria-hidden="true"></div>
 <header class="nav">
   <a class="brand" href="/" aria-label="Daedalus Data Labs home">
     <svg class="mark" viewBox="0 0 42 40" aria-hidden="true"><path fill="currentColor" d="M0 0L4 4L4 36L16.343 36L20.343 40L0 40ZM25.662 39.662A20 20 0 0 0 22 0L5.657 0L9.657 4L22 4A16 16 0 0 1 22 36ZM8 8L22 8A12 12 0 0 1 22 32L8 32ZM12 12L12 28L22 28A8 8 0 0 0 22 12Z"/></svg>
@@ -168,6 +169,8 @@
     Object.keys(links).forEach(function(id){var s=document.getElementById(id);if(s){s=s.closest('section')||s;s.dataset.spy=id;spy.observe(s)}});
   }
   if(!still){
+    // the bronze floor behind the hero drifts slower than the page, which is what makes it read as far away
+    var dq=0;addEventListener('scroll',function(){if(!dq)dq=requestAnimationFrame(function(){dq=0;root.style.setProperty('--depth',(scrollY*.35).toFixed(1)+'px')})},{passive:true});
     // screenshots lie back in perspective and come flat by the time they reach the middle of the screen
     var tilts=[].slice.call(document.querySelectorAll('[data-tilt]')), queued=0;
     function lean(){queued=0;tilts.forEach(function(el){

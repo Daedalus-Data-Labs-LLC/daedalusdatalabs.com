@@ -43,6 +43,18 @@ a{color:inherit}
 .hero-grid pattern path{fill:none;stroke:var(--bronze);stroke-width:.13}
 .hero-grid .cut{fill:none;stroke:var(--bronze);stroke-width:.14;stroke-dasharray:.6 .5}
 
+/* Depth: a warm light above the hero and a faint bronze floor laid back in perspective behind
+   it, so the page reads as content floating over a room rather than ink on a sheet. Static at
+   rest; with motion allowed the floor drifts slower than the page (script sets --depth). */
+.depth{position:absolute;left:0;right:0;top:0;height:1100px;overflow:hidden;z-index:-1;pointer-events:none}
+.depth::before{content:"";position:absolute;left:50%;top:-24px;width:1400px;height:900px;margin-left:-700px;z-index:-1;pointer-events:none;
+background:radial-gradient(40% 30% at 50% 40%,color-mix(in srgb,var(--bronze) 14%,transparent),transparent 72%)}
+.depth::after{content:"";position:absolute;left:50%;top:150px;width:2400px;height:620px;margin-left:-1200px;z-index:-1;pointer-events:none;
+background-image:linear-gradient(color-mix(in srgb,var(--bronze) 22%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--bronze) 22%,transparent) 1px,transparent 1px);
+background-size:48px 48px;background-position:50% var(--depth,0px);transform:perspective(560px) rotateX(64deg);transform-origin:50% 100%;
+-webkit-mask-image:linear-gradient(to bottom,transparent,#000 42%,#000 68%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 42%,#000 68%,transparent)}
+@media (max-width:900px){.depth::after{top:40px}}
+
 /* Products */
 .product{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:64px;align-items:center;padding:88px 0;border-top:1px solid var(--line)}
 .product.agora{grid-template-columns:minmax(0,6fr) minmax(0,5fr)}
