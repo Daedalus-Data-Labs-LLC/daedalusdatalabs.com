@@ -58,4 +58,7 @@ To set a new size, pick a scale that puts the stroke on whole pixels (0.25 per u
 - `daedalus-master-ink.png`, `daedalus-master-reversed.png`: 7560 × 7200, transparent, cropped to the ink (stroke 720).
 - `daedalus-mark-ink.svg`, `daedalus-mark-reversed.svg`: for the web.
 - `daedalus-tile-512.png`, `apple-touch-icon.png`, `favicon-32.png`, `favicon-16.png`, `/favicon.svg`, `/favicon.ico` (16/32/48).
+- `linkedin-logo-400.png`: 400 × 400 Page logo. The app-icon tile, mark at stroke 22 (231 × 220), full bleed; LinkedIn rounds it.
+- `linkedin-banner-1512x256.png`: 1512 × 256 Page cover. Marble ground, headline in Geist SemiBold 44 px with the URL under it,
+  starting 400 px in (the Page logo covers the lower left); mark at stroke 16 (168 × 160), 120 px from the right edge.
 - `og.png`: 1200 × 630. Lockup top-left, headline, mark at stroke 28 on the right.
