@@ -41,7 +41,7 @@ def icon(n,s,ox,oy,round_=True,shadow=False,kw={}):
             f'<path{g} fill="{INK}" d="{mark.d(s,ox,oy,**kw)}"/></svg>')
 A=REPO+'/assets/'
 # LinkedIn Page images (1512 x 256 cover, 400 x 400 logo). The logo is the app-icon tile at
-# stroke 22 (231 x 220); LinkedIn rounds it. The page logo covers the cover's lower left, and
+# stroke 24 (252 x 240), centred exactly; LinkedIn rounds it. The page logo covers the cover's lower left, and
 # phones crop its edges, so the words start 400 px in and the mark stays clear of the right edge.
 BANNER=('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&display=block">'
  f'<div style="position:relative;width:1512px;height:256px;background:{MARBLE};font-family:Geist,sans-serif;color:{INK}">'
@@ -54,7 +54,7 @@ jobs=[dict(svg=icon(16,1,3,3,kw=T16),w=16,h=16,out=A+'favicon-16.png'),
  dict(svg=icon(48,.75,8,9),w=48,h=48,out=TMP+'/fav48.png'),
  dict(svg=icon(180,2.5,37.5,40,round_=False,shadow=True),w=180,h=180,out=A+'apple-touch-icon.png',opaque=True),
  dict(svg=icon(512,7,109,116,round_=False,shadow=True),w=512,h=512,out=A+'daedalus-tile-512.png',opaque=True),
- dict(svg=icon(400,5.5,85,90,round_=False,shadow=True),w=400,h=400,out=A+'linkedin-logo-400.png',opaque=True),
+ dict(svg=icon(400,6,74,80,round_=False,shadow=True),w=400,h=400,out=A+'linkedin-logo-400.png',opaque=True),
  dict(svg=BANNER,w=1512,h=256,out=A+'linkedin-banner-1512x256.png',opaque=True),
  dict(svg=raw(7560,7200,180,0,0),w=7560,h=7200,out=A+'daedalus-master-ink.png'),
  dict(svg=raw(7560,7200,180,0,0,fill=MARBLE),w=7560,h=7200,out=A+'daedalus-master-reversed.png')]
