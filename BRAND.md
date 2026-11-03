@@ -43,11 +43,13 @@ To set a new size, pick a scale that puts the stroke on whole pixels (0.25 per u
 - On the site every mark is drawn at a whole-pixel stroke: header 31.5 × 30 (stroke 3), footer
   21 × 20 (stroke 2, the mark alone beside the copyright line), splash 126 × 120 (stroke 12),
   splash on phones 84 × 80 (stroke 8).
-- App icons: the mark alone on a marble tile, about 70% of the tile's width. 180 px: 126 × 120, stroke 12.
-  512 px: 378 × 360, stroke 36.
-- Favicons: the mark alone on a transparent ground. 32 px and 48 px use the master drawing at
-  0.75 and 1 px per unit. 16 px is redrawn on whole pixels with `s = g = 2`, `c = 2`, `k = 3`, so the strokes and gaps stay equal and sharp.
-  `favicon.svg` uses the 16 px drawing and switches to marble in dark mode.
+- App icons and favicons wear the treatment Meridian's and Agora's do: the mark in ink on a soft tile
+  (white to warm marble `#E9E6DD`, diagonal), about 57% of the tile's width. 180 px: 105 × 100, stroke 10;
+  512 px: 294 × 280, stroke 28; both full bleed (the platform rounds them) with a soft shadow under the mark.
+- Favicons are the same tile with the app-icon corner (22.37%). 32 px and 48 px use the master drawing at
+  0.5 and 0.75 px per unit on a whole-pixel origin. 16 px is redrawn with `s = g = 1`, `c = 4`, `k = 3`
+  (11 × 10), so every stroke and gap is one pixel. `favicon.svg` uses the 16 px drawing and turns to an
+  ink-blue tile with a marble mark in dark mode.
 
 ## Files
 
