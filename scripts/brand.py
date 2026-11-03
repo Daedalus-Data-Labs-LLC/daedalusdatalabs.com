@@ -44,31 +44,11 @@ A=REPO+'/assets/'
 # stroke 24 (252 x 240), centred exactly; LinkedIn rounds it. The Page logo covers the cover's
 # lower left and phones crop its edges, so the words sit in the middle third.
 def linkedin_banner():
-    import math
-    W,H=1512,256; sc=3; s=g=4*sc                 # the mark at stroke 12: 126 x 120
+    W,H=1512,256; sc=3                           # the mark at stroke 12: 126 x 120
     ox,oy=1262,68                                # centred vertically: 68 + 120 + 68
-    L,T,B=ox,oy,oy+120; cx=ox+22*sc; R=20*sc; w=g*math.sqrt(2)
-    rings=[];cuts=[]
-    # The mark's outline repeated outward at the same stroke and gap: the mark becomes the
-    # centre of a larger labyrinth. Each wall has a 45-degree opening g wide, like the mark's,
-    # alternating top and bottom, with more in the left walls.
-    for n in range(1,12):
-        d=g+s/2+(n-1)*(s+g)
-        rings.append(f'M{L-d} {T-d}H{cx}A{R+d} {R+d} 0 0 1 {cx} {B+d}H{L-d}Z')
-        if n%2: y0,y1,xc=T-d-s/2,T-d+s/2,ox+14+18*n
-        else:   y0,y1,xc=B+d-s/2,B+d+s/2,cx-40-14*n
-        c=xc-(y0+y1)/2
-        cuts.append(f'<polygon points="{c+y0},{y0} {c+w+y0},{y0} {c+w+y1},{y1} {c+y1},{y1}"/>')
-        if n>2 and n%2==0:
-            x0,x1=L-d-s/2,L-d+s/2; c2=(x0+x1)/2-(T+30+(n*37)%70)
-            cuts.append(f'<polygon points="{x0},{x0-c2} {x1},{x1-c2} {x1},{x1-c2+w} {x0},{x0-c2+w}"/>')
     svg=(f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" style="position:absolute;left:0;top:0">'
-     '<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBFAF7"/><stop offset="1" stop-color="#ECE9E1"/></linearGradient>'
-     '<linearGradient id="fade" gradientUnits="userSpaceOnUse" x1="1130" y1="0" x2="1250" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff"/></linearGradient>'
-     f'<mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="{W}" height="{H}"><rect width="{W}" height="{H}" fill="url(#fade)"/><g fill="#000">{"".join(cuts)}</g></mask>'
-     f'<filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="{INK}" flood-opacity=".18"/></filter></defs>'
-     f'<rect width="{W}" height="{H}" fill="url(#bg)"/>'
-     f'<path mask="url(#m)" d="{"".join(rings)}" fill="none" stroke="{INK}" stroke-opacity=".07" stroke-width="{s}"/>'
+     f'<defs><filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="{INK}" flood-opacity=".18"/></filter></defs>'
+     f'<rect width="{W}" height="{H}" fill="{MARBLE}"/>'
      f'<path filter="url(#sh)" fill="{INK}" d="{mark.d(sc,ox,oy)}"/></svg>')
     return ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=block">'
      f'<div style="position:relative;width:{W}px;height:{H}px;font-family:Geist,sans-serif;color:{INK}">{svg}'

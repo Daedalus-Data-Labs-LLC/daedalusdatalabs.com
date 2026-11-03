@@ -62,6 +62,5 @@ To set a new size, pick a scale that puts the stroke on whole pixels (0.25 per u
 - `linkedin-banner-1512x256.png`: 1512 × 256 Page cover. The line is "We set our minds to unknown arts." (Ovid, *Metamorphoses*
   VIII.188, on Daedalus: *et ignotas animum dimittit in artes*), Geist SemiBold 46 px, over "A student-founded software studio ·
   daedalusdatalabs.com" at 18 px, 392 px in: clear of the Page logo at lower left and of the phone crop. The mark sits on the
-  right at stroke 12 (126 × 120) with a soft shadow, at the centre of its own outline repeated outward at the same stroke and
-  gap, each wall opened by a 45° cut, in ink at 7% and fading out before the words. The ground is a soft marble gradient.
+  right at stroke 12 (126 × 120), centred vertically, with a soft shadow, on plain marble.
 - `og.png`: 1200 × 630. Lockup top-left, headline, mark at stroke 28 on the right.
