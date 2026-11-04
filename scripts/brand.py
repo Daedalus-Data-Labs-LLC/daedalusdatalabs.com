@@ -40,11 +40,31 @@ def icon(n,s,ox,oy,round_=True,shadow=False,kw={}):
             f'<defs>{tile_defs(TILE_L)}{f}</defs><rect width="{n}" height="{n}"{rx} fill="url(#t)"/>'
             f'<path{g} fill="{INK}" d="{mark.d(s,ox,oy,**kw)}"/></svg>')
 A=REPO+'/assets/'
+# LinkedIn Page images (1512 x 256 cover, 400 x 400 logo). The logo is the app-icon tile at
+# stroke 24 (252 x 240), centred exactly; LinkedIn rounds it. The Page logo covers the cover's
+# lower left and phones crop its edges, so the words sit in the middle third.
+def linkedin_banner():
+    W,H=1512,256; sc=3                           # the mark at stroke 12: 126 x 120
+    ox,oy=1262,68                                # centred vertically: 68 + 120 + 68
+    svg=(f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" style="position:absolute;left:0;top:0">'
+     f'<defs><filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="{INK}" flood-opacity=".18"/></filter></defs>'
+     f'<rect width="{W}" height="{H}" fill="{MARBLE}"/>'
+     f'<path filter="url(#sh)" fill="{INK}" d="{mark.d(sc,ox,oy)}"/></svg>')
+    return ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=block">'
+     f'<div style="position:relative;width:{W}px;height:{H}px;font-family:Geist,sans-serif;color:{INK}">{svg}'
+     '<div style="position:absolute;left:392px;top:0;height:244px;display:flex;flex-direction:column;justify-content:center">'
+     '<div style="font-weight:600;font-size:46px;line-height:1.08;letter-spacing:-.025em">We set our minds to unknown arts.</div>'
+     '<div style="margin-top:18px;display:flex;align-items:center;gap:12px;font-size:18px;color:rgba(11,21,38,.62)">'
+     '<span>A student-founded software studio</span><span style="width:4px;height:4px;border-radius:50%;background:rgba(11,21,38,.35)"></span>'
+     f'<span style="color:{INK};font-weight:500">daedalusdatalabs.com</span></div></div></div>')
+BANNER=linkedin_banner()
 jobs=[dict(svg=icon(16,1,3,3,kw=T16),w=16,h=16,out=A+'favicon-16.png'),
  dict(svg=icon(32,.5,6,6),w=32,h=32,out=A+'favicon-32.png'),
  dict(svg=icon(48,.75,8,9),w=48,h=48,out=TMP+'/fav48.png'),
  dict(svg=icon(180,2.5,37.5,40,round_=False,shadow=True),w=180,h=180,out=A+'apple-touch-icon.png',opaque=True),
  dict(svg=icon(512,7,109,116,round_=False,shadow=True),w=512,h=512,out=A+'daedalus-tile-512.png',opaque=True),
+ dict(svg=icon(400,6,74,80,round_=False,shadow=True),w=400,h=400,out=A+'linkedin-logo-400.png',opaque=True),
+ dict(svg=BANNER,w=1512,h=256,out=A+'linkedin-banner-1512x256.png',opaque=True),
  dict(svg=raw(7560,7200,180,0,0),w=7560,h=7200,out=A+'daedalus-master-ink.png'),
  dict(svg=raw(7560,7200,180,0,0,fill=MARBLE),w=7560,h=7200,out=A+'daedalus-master-reversed.png')]
 json.dump(jobs,open(TMP+'/jobs.json','w'))
