@@ -39,9 +39,9 @@ You need Node.js 18 or newer and a free Cloudflare account.
    ```bash
    npx wrangler deploy
    ```
-4. Generate a webhook secret and copy it:
+4. Generate a webhook secret and copy it (works in PowerShell, macOS and Linux):
    ```bash
-   openssl rand -hex 32
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
    ```
 5. Store the secret on the Worker (paste it when asked):
    ```bash
