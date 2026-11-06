@@ -115,7 +115,8 @@ test("start page names the Discord account (escaped) and links to GitHub sign-in
 test("expired or forged links are rejected", async () => {
   const expired = await goodState({ e: Date.now() - 1 });
   assert.equal((await get(`/auth/start?state=${encodeURIComponent(expired)}`)).status, 400);
-  const forged = (await goodState()).replace(/.$/, "0");
+  const good = await goodState();
+  const forged = good.slice(0, -1) + (good.endsWith("0") ? "1" : "0"); // always differs
   assert.equal((await get(`/auth/start?state=${encodeURIComponent(forged)}`)).status, 400);
 });
 
