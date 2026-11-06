@@ -7,6 +7,10 @@
 // Secrets (set with `wrangler secret put`):
 //   GITHUB_WEBHOOK_SECRET  the secret entered on the GitHub webhook
 //   DISCORD_WEBHOOK_URL    the Discord channel webhook URL (without /github)
+//
+// Optional KV binding PEOPLE maps GitHub logins (lowercase keys) to Discord
+// user IDs, so messages show people's Discord names. Unmapped people show
+// their GitHub login.
 
 const MAX_COMMITS = 5;
 const MAX_LEN = 2000; // Discord message limit
@@ -30,7 +34,8 @@ export default {
       return new Response("Bad JSON", { status: 400 });
     }
 
-    const message = format(event, payload);
+    const who = await displayName(env.PEOPLE, payload.sender?.login);
+    const message = format(event, payload, who);
     if (!message) return new Response("Ignored", { status: 202 });
 
     const res = await fetch(env.DISCORD_WEBHOOK_URL, {
@@ -96,9 +101,23 @@ function msg(icon, summary, repo, details) {
   return details ? `${head}\n||${details}||` : head;
 }
 
-function format(event, p) {
+// A Discord mention renders as the person's current server name. It never
+// pings them, because every message sets allowed_mentions to none.
+async function displayName(people, login) {
+  if (people && login) {
+    try {
+      // Value is the Discord user ID, optionally followed by a note (e.g. a name).
+      const id = (await people.get(login.toLowerCase()))?.trim().split(/\s+/)[0];
+      if (id && /^\d{17,20}$/.test(id)) return `<@${id}>`;
+    } catch {
+      // KV unavailable: fall back to the GitHub login.
+    }
+  }
+  return `**${clean(login)}**`;
+}
+
+function format(event, p, who = `**${clean(p.sender?.login)}**`) {
   const repo = p.repository?.name ?? "";
-  const who = `**${clean(p.sender?.login)}**`;
 
   switch (event) {
     case "push": {
@@ -197,4 +216,4 @@ function isMergeCommit(p) {
   return /^Merge pull request #\d+/.test(c.message) || /\(#\d+\)\s*$/.test(c.message.split("\n")[0]);
 }
 
-export { format, verify };
+export { format, verify, displayName };

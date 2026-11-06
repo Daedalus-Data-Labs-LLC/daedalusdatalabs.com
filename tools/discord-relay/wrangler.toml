@@ -5,3 +5,10 @@ compatibility_date = "2026-10-01"
 # Secrets, set with `npx wrangler secret put <NAME>`:
 #   GITHUB_WEBHOOK_SECRET
 #   DISCORD_WEBHOOK_URL
+
+# GitHub login → Discord user ID roster (optional). Create it with
+# `npx wrangler kv namespace create PEOPLE`, then uncomment these lines and
+# paste the id it prints. See README.md, "Show Discord names".
+# [[kv_namespaces]]
+# binding = "PEOPLE"
+# id = "paste-the-id-here"

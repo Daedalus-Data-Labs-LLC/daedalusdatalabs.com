@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
-import worker, { format } from "../src/index.js";
+import worker, { format, displayName } from "../src/index.js";
 
 const SECRET = "test-secret";
 const env = { GITHUB_WEBHOOK_SECRET: SECRET, DISCORD_WEBHOOK_URL: "https://discord.test/hook" };
@@ -91,4 +91,20 @@ test("user text cannot escape the spoiler or ping anyone", () => {
 test("branch creation is a single line", () => {
   assert.equal(format("create", { ref: "claude/x", ref_type: "branch", repository, sender }),
     "🌱 **octo\\_cat** created branch `claude/x` · *daedalusdatalabs.com*");
+});
+
+const kv = (map) => ({ get: async (k) => map[k] ?? null });
+
+test("mapped GitHub login shows as a Discord mention that never pings", async () => {
+  env.PEOPLE = kv({ octo_cat: "123456789012345678 Octo (design)" });
+  const { sent } = await send("create", { ref: "x", ref_type: "branch", repository, sender: { login: "Octo_Cat" } });
+  delete env.PEOPLE;
+  assert.equal(sent[0].body.content, "🌱 <@123456789012345678> created branch `x` · *daedalusdatalabs.com*");
+  assert.deepEqual(sent[0].body.allowed_mentions, { parse: [] });
+});
+
+test("unmapped or invalid entries fall back to the GitHub login", async () => {
+  assert.equal(await displayName(kv({}), "octo_cat"), "**octo\\_cat**");
+  assert.equal(await displayName(kv({ octo_cat: "not-an-id" }), "octo_cat"), "**octo\\_cat**");
+  assert.equal(await displayName(undefined, "octo_cat"), "**octo\\_cat**");
 });

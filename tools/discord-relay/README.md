@@ -58,6 +58,57 @@ You need Node.js 18 or newer and a free Cloudflare account.
    - Click **Update webhook**.
 8. Check **Recent Deliveries**. Redeliver the latest event: it should return `200` (posted) or `202` (ignored).
 
+## Show Discord names
+
+Messages show the GitHub username by default. To show people's Discord names instead, keep a
+roster of GitHub username → Discord user ID in Cloudflare. Mentions show the person's current
+Discord server name and never ping them. Anyone not in the roster still shows their GitHub username.
+
+The roster lives in Cloudflare, not in this repo, because the repo is public.
+
+**Set up the roster (once).** Run these from `tools/discord-relay`.
+
+1. Create the roster and copy the `id` it prints:
+   ```bash
+   npx wrangler kv namespace create PEOPLE
+   ```
+2. In `wrangler.toml`, remove the `# ` from the last three lines and replace `paste-the-id-here`
+   with that id.
+3. Deploy:
+   ```bash
+   npx wrangler deploy
+   ```
+
+**Get someone's Discord user ID**
+
+1. In Discord, go to **User Settings → Advanced** and turn on **Developer Mode**.
+2. Right-click the person's name and click **Copy User ID**.
+
+**Add or update a person.** Use their GitHub username in lowercase, then their Discord ID. Anything
+after the ID is a note for your own reference, like their name:
+
+```bash
+npx wrangler kv key put --binding PEOPLE --remote "octocat" "123456789012345678 Warren"
+```
+
+**See who's in the roster**
+
+```bash
+npx wrangler kv key list --binding PEOPLE --remote
+```
+
+You can also browse and edit it in the Cloudflare dashboard: **Storage & Databases → KV → PEOPLE**.
+
+**Remove a person**
+
+```bash
+npx wrangler kv key delete --binding PEOPLE --remote "octocat"
+```
+
+Roster changes take effect within about a minute. You don't need to redeploy.
+
+## Changing the relay
+
 To change the formatting later, edit `src/index.js`, run `npm test`, then `npx wrangler deploy` again.
 
 ## Notes
