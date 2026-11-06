@@ -103,8 +103,9 @@ test("mapped GitHub login shows as a Discord mention that never pings", async ()
   assert.deepEqual(sent[0].body.allowed_mentions, { parse: [] });
 });
 
-test("unmapped or invalid entries fall back to the GitHub login", async () => {
-  assert.equal(await displayName(kv({}), "octo_cat"), "**octo\\_cat**");
-  assert.equal(await displayName(kv({ octo_cat: "not-an-id" }), "octo_cat"), "**octo\\_cat**");
-  assert.equal(await displayName(undefined, "octo_cat"), "**octo\\_cat**");
+test("unmapped people show their GitHub login, flagged as unlinked", async () => {
+  assert.equal(await displayName(kv({}), "octo_cat"), "**octo\\_cat** *(unlinked)*");
+  assert.equal(await displayName(kv({ octo_cat: "not-an-id" }), "octo_cat"), "**octo\\_cat** *(unlinked)*");
+  assert.equal(await displayName(kv({}), "dependabot[bot]", "Bot"), "**dependabot[bot]**"); // bots are never nudged
+  assert.equal(await displayName(undefined, "octo_cat"), "**octo\\_cat**"); // no roster configured
 });

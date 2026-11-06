@@ -1,7 +1,13 @@
 # GitHub → Discord relay
 
-A Cloudflare Worker that turns the org-level GitHub webhook into short Discord messages:
-one summary line, with the technical details behind a spoiler that viewers click to reveal.
+A Cloudflare Worker that:
+
+- turns the org-level GitHub webhook into short Discord messages: one summary line, with the
+  technical details behind a spoiler that viewers click to reveal;
+- shows people by their Discord name, using a GitHub → Discord roster;
+- lets new members link their own GitHub account with **Sign in with GitHub**, which gives them a
+  **Verified** role that unlocks the server;
+- alerts admins when a linked member leaves the Discord server.
 
 ```
 🔀 **warren** merged PR #12 into `main` · *daedalusdatalabs.com*
@@ -62,9 +68,13 @@ You need Node.js 18 or newer and a free Cloudflare account.
 
 Messages show the GitHub username by default. To show people's Discord names instead, keep a
 roster of GitHub username → Discord user ID in Cloudflare. Mentions show the person's current
-Discord server name and never ping them. Anyone not in the roster still shows their GitHub username.
+Discord server name and never ping them. Anyone not in the roster shows their GitHub username marked
+*(unlinked)*, as a nudge to verify. Bots are never marked.
 
 The roster lives in Cloudflare, not in this repo, because the repo is public.
+
+Once verification is set up (below), members add themselves. The manual commands here still work
+for anyone you want to add by hand.
 
 **Set up the roster (once).** Run these from `tools/discord-relay`.
 
@@ -107,11 +117,111 @@ npx wrangler kv key delete --binding PEOPLE --remote "octocat"
 
 Roster changes take effect within about a minute. You don't need to redeploy.
 
+## Verify members with GitHub
+
+New members land in a **#verify** channel, click **Verify GitHub**, and sign in on GitHub's own
+page. The Worker gets their GitHub username (never their password), adds them to the roster, gives
+them the **Verified** role, and posts a note in a private admin channel. It then revokes the GitHub
+authorization, so no token is kept.
+
+Every 15 minutes it also checks the Discord member list. If a linked member has left or been
+removed, it alerts the admin channel with a link to review their GitHub org access. It never
+removes anyone from GitHub itself.
+
+Set up the roster first (see "Show Discord names"). In Discord, turn on **User Settings → Advanced →
+Developer Mode** so you can copy IDs.
+
+**1. Create the Discord bot**
+
+1. Go to <https://discord.com/developers/applications> and click **New Application**. Name it
+   (for example, "Daedalus").
+2. On **General Information**, copy the **Application ID** and **Public Key**.
+3. On **Bot**, click **Reset Token** and copy the token. Under **Privileged Gateway Intents**, turn
+   on **Server Members Intent** and save.
+4. On **OAuth2 → URL Generator**, tick **bot** and **applications.commands**. Under bot
+   permissions, tick **Manage Roles**, **View Channels** and **Send Messages**. Open the URL it
+   generates and add the bot to your server.
+
+**2. Set up the server**
+
+1. **Server Settings → Roles:** create a role named **Verified**. Drag the bot's role **above**
+   Verified, or the bot can't assign it. Right-click Verified and **Copy Role ID**.
+2. Create a **#verify** text channel. Right-click it and **Copy Channel ID**.
+3. Create a private admin channel. In its settings, go to **Integrations → Webhooks → New Webhook**
+   and **Copy Webhook URL**.
+4. Right-click the server icon and **Copy Server ID**.
+
+Don't lock the other channels yet. That comes last, after everyone has verified.
+
+**3. Create the GitHub sign-in app**
+
+1. Go to **GitHub → Org Settings → Developer settings → OAuth Apps → New OAuth App**.
+2. **Application name:** Daedalus Discord Verify. **Homepage URL:** `https://daedalusdatalabs.com`.
+   **Authorization callback URL:** `https://<your-worker-url>/auth/callback`.
+3. Click **Register application** and copy the **Client ID**. Click **Generate a new client secret**
+   and copy it.
+
+**4. Save the values on the Worker.** Run each command and paste the value when asked:
+
+```bash
+npx wrangler secret put DISCORD_PUBLIC_KEY
+```
+```bash
+npx wrangler secret put DISCORD_BOT_TOKEN
+```
+```bash
+npx wrangler secret put DISCORD_GUILD_ID
+```
+```bash
+npx wrangler secret put DISCORD_VERIFIED_ROLE_ID
+```
+```bash
+npx wrangler secret put DISCORD_ADMIN_WEBHOOK_URL
+```
+```bash
+npx wrangler secret put GITHUB_CLIENT_ID
+```
+```bash
+npx wrangler secret put GITHUB_CLIENT_SECRET
+```
+
+Then deploy:
+
+```bash
+npx wrangler deploy
+```
+
+**5. Connect Discord to the Worker**
+
+1. In the Discord Developer Portal, on **General Information**, set **Interactions Endpoint URL** to
+   `https://<your-worker-url>/discord` and save. Discord tests it straight away. If it won't save,
+   check `DISCORD_PUBLIC_KEY`.
+2. Register `/verify` and post the Verify panel in #verify (it asks for the Application ID, bot
+   token, server ID and #verify channel ID):
+   ```bash
+   node scripts/setup-discord.mjs
+   ```
+
+**6. Test it, then lock the server**
+
+1. Click **Verify GitHub** in #verify and finish the sign-in. You should get the Verified role, and
+   a ✅ note should appear in the admin channel.
+2. Ask existing members to verify too.
+3. Once they have, lock the server:
+   - **Server Settings → Roles → @everyone:** turn off **View Channels**.
+   - **Verified role:** turn on **View Channels**.
+   - **#verify → Edit Channel → Permissions:** for @everyone, allow **View Channel** and deny
+     **Send Messages**.
+
+Members who leave Discord lose the Verified role automatically. Someone who returns clicks
+**Verify GitHub** again.
+
 ## Changing the relay
 
 To change the formatting later, edit `src/index.js`, run `npm test`, then `npx wrangler deploy` again.
 
 ## Notes
 
-- Requests without a valid GitHub signature are rejected, so the public Worker URL can't be used to post to Discord.
+- Requests without a valid GitHub or Discord signature are rejected, so the public Worker URL can't be used to post to Discord.
+- Verify links are signed, are tied to the Discord account that clicked, and expire after 10 minutes.
 - This folder sits in the website repo, so the static host will serve these files publicly. They hold no secrets.
