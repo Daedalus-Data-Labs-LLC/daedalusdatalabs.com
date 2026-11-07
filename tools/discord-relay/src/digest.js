@@ -67,6 +67,8 @@ export async function postDigest(env, now = Date.now()) {
     lines.push("", heading);
     for (const p of group) lines.push(line(p, name, now));
   }
+  if (prs.every((p) => p.status === "draft")) lines.push("", "✨ Nothing is waiting on anyone right now.");
+
   const footer = [];
   if (drafts) footer.push(`📝 ${drafts} draft${drafts === 1 ? "" : "s"} not shown`);
   if (lines.some((l) => l.endsWith("⏰"))) footer.push(`⏰ no activity for ${STALE_DAYS}+ days`);

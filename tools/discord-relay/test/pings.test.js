@@ -231,6 +231,10 @@ test("digest respects the digest setting and stays silent with no open PRs", asy
   await postDigest({ DISCORD_WEBHOOK_URL: "https://discord.test/hook", PEOPLE: roster({ digest: false }) }, NOW);
   assert.deepEqual(posted[0].allowed_mentions.users, []);
 
+  posted = digestRoutes([openPr(1, { draft: true }), openPr(2, { draft: true })]);
+  await postDigest({ DISCORD_WEBHOOK_URL: "https://discord.test/hook", PEOPLE: roster() }, NOW);
+  assert.match(posted[0].content, /· 2 open\n\n✨ Nothing is waiting on anyone right now\.\n\n-# 📝 2 drafts not shown$/);
+
   posted = digestRoutes([]);
   await postDigest({ DISCORD_WEBHOOK_URL: "https://discord.test/hook", PEOPLE: roster() }, NOW);
   assert.equal(posted.length, 0);
