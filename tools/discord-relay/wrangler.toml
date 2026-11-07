@@ -4,6 +4,24 @@ compatibility_date = "2026-10-01"
 
 [vars]
 GITHUB_ORG = "Daedalus-Data-Labs-LLC"
+# @Daedalus assistant: free Cloudflare model, and questions per person per day (UTC).
+WORKERS_AI_MODEL = "@cf/zai-org/glm-4.7-flash"
+AI_DAILY_LIMIT = "20"
+# Used instead of Workers AI once the ANTHROPIC_API_KEY secret is set.
+ANTHROPIC_MODEL = "claude-opus-5-5"
+
+# Cloudflare Workers AI (free daily allowance) for the @Daedalus assistant.
+[ai]
+binding = "AI"
+
+# Holds the always-on Discord connection. SQLite-backed so it runs on the free plan.
+[[durable_objects.bindings]]
+name = "GATEWAY"
+class_name = "GatewayBot"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["GatewayBot"]
 
 # Every 15 minutes: check for linked members who left the Discord server.
 # Weekdays at 14:00 UTC (9am US Eastern in winter, 10am in summer): daily PR digest.
@@ -16,7 +34,8 @@ crons = ["*/15 * * * *", "0 14 * * 1-5"]
 #   DISCORD_PUBLIC_KEY, DISCORD_BOT_TOKEN, DISCORD_GUILD_ID,
 #   DISCORD_VERIFIED_ROLE_ID, DISCORD_ADMIN_WEBHOOK_URL,
 #   GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET                           verify + leave alerts
-#   GITHUB_TOKEN (optional, read-only)                               digest: private repos
+#   GITHUB_TOKEN (optional, read-only)                               digest + @Daedalus: private repos, code search
+#   ANTHROPIC_API_KEY (optional)                                     @Daedalus: use Claude instead of Workers AI
 
 # GitHub login → Discord user ID roster (Cloudflare KV). The id isn't secret:
 # it only works with Daedalus's Cloudflare account.

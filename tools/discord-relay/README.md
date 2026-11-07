@@ -9,7 +9,8 @@ A Cloudflare Worker that:
   **Verified** role that unlocks the server;
 - alerts admins when a linked member leaves the Discord server;
 - pings people when something on GitHub needs them, with per-person settings (`/notify`);
-- posts a daily digest of open PRs and who each one is waiting on.
+- posts a daily digest of open PRs and who each one is waiting on;
+- answers questions about your GitHub projects when someone writes `@Daedalus` in Discord.
 
 ```
 🔀 **warren** merged PR #12 into `main` · *daedalusdatalabs.com*
@@ -258,8 +259,9 @@ public repos, and GitHub limits how often it can ask.
 2. **Token name:** `Daedalus digest`. **Resource owner:** `Daedalus-Data-Labs-LLC`.
    **Expiration:** the longest your org allows. Set a reminder to renew it.
 3. **Repository access:** All repositories.
-4. **Permissions → Repository permissions → Pull requests:** Read-only. (Metadata: Read-only is
-   added automatically.) Nothing else.
+4. **Permissions → Repository permissions:** set **Contents**, **Issues** and **Pull requests** to
+   Read-only. (Metadata: Read-only is added automatically.) Nothing else. The digest only needs Pull
+   requests; the `@Daedalus` assistant uses all three to read code, issues and PRs.
 5. Click **Generate token** and copy it. If your org requires approval, approve it under
    **Org Settings → Personal access tokens → Pending requests**.
 6. Save it on the Worker:
@@ -269,6 +271,71 @@ public repos, and GitHub limits how often it can ask.
 
 If the token expires or GitHub stops answering, the digest posts a warning in the admin channel
 instead.
+
+## @Daedalus assistant
+
+Anyone Verified can write `@Daedalus` and a question in any channel the bot can see:
+
+> @Daedalus what changed in the site this week?
+
+The bot starts a thread on that message and answers there, linking the files, PRs and commits it
+looked at. Follow-ups in that thread don't need the `@`. It can only **read** GitHub: it can't
+change code, open issues or comment.
+
+**Limits and safety**
+
+- Verified members only. Each person gets `AI_DAILY_LIMIT` questions per day (20 by default, reset
+  at 00:00 UTC), so one person can't use up the free AI allowance.
+- It only sees repos in `GITHUB_ORG` that its `GITHUB_TOKEN` can read. Without a token it sees
+  public repos only, and code search doesn't work.
+- Text from GitHub is treated as information, not instructions, and anything that looks like a
+  secret (tokens, keys) is masked before the AI sees it and before an answer is posted.
+- Discord only shows the bot messages that mention it and messages in threads it started.
+
+**How it runs (free)**
+
+- A Cloudflare Durable Object keeps the connection to Discord open. On the free plan this uses
+  about 10,800 of the 13,000 GB-seconds allowed per day. If that limit is ever reached, the bot stops
+  answering until 00:00 UTC; nothing is billed, and the relay, verification and digest keep working.
+- Answers come from Cloudflare Workers AI (`WORKERS_AI_MODEL`, default `@cf/zai-org/glm-4.7-flash`)
+  on its free daily allowance. When that runs out, the bot says so and is back after 00:00 UTC.
+- The 15-minute check (and any slash command) restarts the connection if it has dropped.
+
+**Turn it on**
+
+1. In the Discord Developer Portal, open the app → **Bot** → under **Privileged Gateway Intents**,
+   turn on **Message Content Intent** → **Save Changes**.
+2. In Discord, **Server Settings → Roles → Daedalus** (the bot's role) → turn on **Create Public
+   Threads**, **Send Messages in Threads** and **Read Message History** → **Save Changes**.
+3. From `tools/discord-relay`, install the new dependency and deploy:
+   ```bash
+   npm install
+   ```
+   ```bash
+   npx wrangler deploy
+   ```
+4. Run any slash command (for example `/notify`) to start the connection now, or wait up to
+   15 minutes.
+5. Test it: `@Daedalus what repos do we have?`
+
+**Use Claude instead (optional, paid)**
+
+Free models handle quick questions well but are weaker at reading code closely. To switch to
+Claude, create an API key at console.anthropic.com (you can set a monthly spending limit there),
+then:
+
+```bash
+npx wrangler secret put ANTHROPIC_API_KEY
+```
+
+It switches on its own, with no redeploy. The model is `ANTHROPIC_MODEL` in `wrangler.toml`
+(`claude-opus-5-5`). If Claude's safety checks decline a question, the request is retried on
+Anthropic's recommended fallback model. To go back to the free model, run
+`npx wrangler secret delete ANTHROPIC_API_KEY`.
+
+**Change the model or the limit:** edit `WORKERS_AI_MODEL`, `ANTHROPIC_MODEL` or `AI_DAILY_LIMIT`
+in `wrangler.toml` and run `npx wrangler deploy`. Workers AI retires models over time; run
+`npx wrangler ai models list` to see what's available, and pick one marked for function calling.
 
 ## Adding or updating commands
 
