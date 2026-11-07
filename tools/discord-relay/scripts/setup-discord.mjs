@@ -24,62 +24,67 @@ async function discord(method, path, body) {
     headers: { authorization: `Bot ${token}`, "content-type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!res.ok) {
-    console.error(`\n✗ ${method} ${path} failed (${res.status}): ${await res.text()}`);
-    process.exit(1);
-  }
+  if (!res.ok) throw new Error(`${method} ${path} failed (${res.status}): ${await res.text()}`);
   return res.json();
 }
 
-const BOOL = 5;
-const pref = (name, description) => ({ type: BOOL, name, description, required: false });
+// Failures set the exit code instead of calling process.exit(), which can
+// crash Node on Windows while network connections are still closing.
+async function main() {
+  const BOOL = 5;
+  const pref = (name, description) => ({ type: BOOL, name, description, required: false });
 
-await discord("PUT", `/applications/${appId}/guilds/${guildId}/commands`, [
-  { name: "verify", description: "Link your GitHub account to your Discord account", type: 1 },
-  {
-    name: "notify",
-    description: "Show or change which GitHub events ping you",
-    type: 1,
-    options: [
-      pref("all", "Turn every ping on or off"),
-      pref("review_requests", "Someone asks you to review a PR"),
-      pref("assignments", "You're assigned a PR or issue"),
-      pref("my_work", "Activity on PRs and issues you opened"),
-      pref("mentions", "You're @mentioned on GitHub"),
-      pref("digest", "You're waiting on something in the daily digest"),
-    ],
-  },
-  {
-    name: "digest",
-    description: "Post the open-PR digest now",
-    type: 1,
-    default_member_permissions: String(1 << 5), // Manage Server
-  },
-]);
-console.log("✓ Registered /verify, /notify and /digest");
-
-if (!channelId) {
-  console.log("Skipped posting the Verify panel.");
-  process.exit(0);
-}
-
-await discord("POST", `/channels/${channelId}/messages`, {
-  content:
-    "## Welcome to Daedalus Data Labs\n" +
-    "To unlock the rest of the server, link your GitHub account:\n" +
-    "1. Click **Verify GitHub** below.\n" +
-    "2. Sign in to GitHub and click **Authorize**.\n\n" +
-    "We only receive your GitHub username, never your password.\n" +
-    "No GitHub account yet? Click **Create a GitHub account** first, then come back and click **Verify GitHub**.",
-  components: [
+  await discord("PUT", `/applications/${appId}/guilds/${guildId}/commands`, [
+    { name: "verify", description: "Link your GitHub account to your Discord account", type: 1 },
     {
+      name: "notify",
+      description: "Show or change which GitHub events ping you",
       type: 1,
-      components: [
-        { type: 2, style: 1, label: "Verify GitHub", custom_id: "verify" },
-        { type: 2, style: 5, label: "Create a GitHub account", url: "https://github.com/signup" },
+      options: [
+        pref("all", "Turn every ping on or off"),
+        pref("review_requests", "Someone asks you to review a PR"),
+        pref("assignments", "You're assigned a PR or issue"),
+        pref("my_work", "Activity on PRs and issues you opened"),
+        pref("mentions", "You're @mentioned on GitHub"),
+        pref("digest", "You're waiting on something in the daily digest"),
       ],
     },
-  ],
-  allowed_mentions: { parse: [] },
+    {
+      name: "digest",
+      description: "Post the open-PR digest now",
+      type: 1,
+      default_member_permissions: String(1 << 5), // Manage Server
+    },
+  ]);
+  console.log("✓ Registered /verify, /notify and /digest");
+
+  if (!channelId) {
+    console.log("Skipped posting the Verify panel.");
+  } else {
+    await discord("POST", `/channels/${channelId}/messages`, {
+      content:
+        "## Welcome to Daedalus Data Labs\n" +
+        "To unlock the rest of the server, link your GitHub account:\n" +
+        "1. Click **Verify GitHub** below.\n" +
+        "2. Sign in to GitHub and click **Authorize**.\n\n" +
+        "We only receive your GitHub username, never your password.\n" +
+        "No GitHub account yet? Click **Create a GitHub account** first, then come back and click **Verify GitHub**.",
+      components: [
+        {
+          type: 1,
+          components: [
+            { type: 2, style: 1, label: "Verify GitHub", custom_id: "verify" },
+            { type: 2, style: 5, label: "Create a GitHub account", url: "https://github.com/signup" },
+          ],
+        },
+      ],
+      allowed_mentions: { parse: [] },
+    });
+    console.log("✓ Posted the Verify panel in #verify");
+  }
+}
+
+main().catch((err) => {
+  console.error(`\n✗ ${err.message}`);
+  process.exitCode = 1;
 });
-console.log("✓ Posted the Verify panel in #verify");
