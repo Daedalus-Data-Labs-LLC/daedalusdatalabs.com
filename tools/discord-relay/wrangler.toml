@@ -1,0 +1,22 @@
+name = "github-discord-relay"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+GITHUB_ORG = "Daedalus-Data-Labs-LLC"
+
+# Check every 15 minutes for linked members who left the Discord server.
+[triggers]
+crons = ["*/15 * * * *"]
+
+# Secrets, set with `npx wrangler secret put <NAME>` (see README.md):
+#   GITHUB_WEBHOOK_SECRET, DISCORD_WEBHOOK_URL                       relay
+#   DISCORD_PUBLIC_KEY, DISCORD_BOT_TOKEN, DISCORD_GUILD_ID,
+#   DISCORD_VERIFIED_ROLE_ID, DISCORD_ADMIN_WEBHOOK_URL,
+#   GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET                           verify + leave alerts
+
+# GitHub login → Discord user ID roster (Cloudflare KV). The id isn't secret:
+# it only works with Daedalus's Cloudflare account.
+[[kv_namespaces]]
+binding = "PEOPLE"
+id = "b7cf6ce9e91041b6892ce84bd8d517c4"
