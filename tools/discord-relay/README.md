@@ -76,18 +76,10 @@ The roster lives in Cloudflare, not in this repo, because the repo is public.
 Once verification is set up (below), members add themselves. The manual commands here still work
 for anyone you want to add by hand.
 
-**Set up the roster (once).** Run these from `tools/discord-relay`.
-
-1. Create the roster and copy the `id` it prints:
-   ```bash
-   npx wrangler kv namespace create PEOPLE
-   ```
-2. In `wrangler.toml`, remove the `# ` from the last three lines and replace `paste-the-id-here`
-   with that id.
-3. Deploy:
-   ```bash
-   npx wrangler deploy
-   ```
+**Roster setup.** The roster already exists, and its id is in `wrangler.toml`. Only if you ever
+rebuild it from scratch (for example, on a different Cloudflare account): run
+`npx wrangler kv namespace create PEOPLE`, put the new id in `wrangler.toml`, and run
+`npx wrangler deploy`.
 
 **Get someone's Discord user ID**
 
@@ -128,7 +120,7 @@ Every 15 minutes it also checks the Discord member list. If a linked member has 
 removed, it alerts the admin channel with a link to review their GitHub org access. It never
 removes anyone from GitHub itself.
 
-Set up the roster first (see "Show Discord names"). In Discord, turn on **User Settings → Advanced →
+The roster must be connected first (see "Show Discord names"). In Discord, turn on **User Settings → Advanced →
 Developer Mode** so you can copy IDs.
 
 **1. Create the Discord bot**
