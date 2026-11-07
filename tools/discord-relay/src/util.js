@@ -48,14 +48,16 @@ export async function readState(secret, token, now = Date.now()) {
 
 // ---------- Discord ----------
 
-export function postToDiscord(webhookUrl, content) {
+// Only the Discord user IDs in `ping` get notified. Every other mention in
+// the message shows as a name, and @everyone/@here never work.
+export function postToDiscord(webhookUrl, content, ping = []) {
   return fetch(webhookUrl, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       content: content.slice(0, MAX_LEN),
       flags: SUPPRESS_EMBEDS,
-      allowed_mentions: { parse: [] }, // never ping @everyone or users
+      allowed_mentions: { parse: [], users: ping.slice(0, 100) },
     }),
   });
 }

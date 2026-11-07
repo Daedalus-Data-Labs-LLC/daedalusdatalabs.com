@@ -7,7 +7,9 @@ A Cloudflare Worker that:
 - shows people by their Discord name, using a GitHub → Discord roster;
 - lets new members link their own GitHub account with **Sign in with GitHub**, which gives them a
   **Verified** role that unlocks the server;
-- alerts admins when a linked member leaves the Discord server.
+- alerts admins when a linked member leaves the Discord server;
+- pings people when something on GitHub needs them, with per-person settings (`/notify`);
+- posts a daily digest of open PRs and who each one is waiting on.
 
 ```
 🔀 **warren** merged PR #12 into `main` · *daedalusdatalabs.com*
@@ -19,9 +21,9 @@ A Cloudflare Worker that:
 | GitHub event | Posted when |
 |---|---|
 | Pushes | Commits are pushed. Pushes created by merging a PR in GitHub's UI are skipped, since the merge message covers them. |
-| Pull requests | Opened, marked ready for review, reopened, merged, or closed without merging |
+| Pull requests | Opened, marked ready for review, reopened, review requested, assigned, merged, or closed without merging |
 | Pull request reviews | A review is submitted (approved, changes requested, commented) |
-| Issues | Opened, closed, reopened |
+| Issues | Opened, closed, reopened, assigned |
 | Issue comments | A comment is added to an issue or PR |
 | Branch or tag creation / deletion | Always |
 | Releases | A release is published |
@@ -207,6 +209,75 @@ npx wrangler deploy
 
 Members who leave Discord lose the Verified role automatically. Someone who returns clicks
 **Verify GitHub** again.
+
+## Pings
+
+Linked members get a Discord ping when something on GitHub needs them:
+
+| Setting | Pinged when |
+|---|---|
+| `review_requests` | Someone asks you to review a PR |
+| `assignments` | You're assigned a PR or issue |
+| `my_work` | Someone reviews, comments on, merges or closes a PR or issue you opened |
+| `mentions` | Someone @mentions your GitHub username in a PR, issue, review or comment |
+| `digest` | The daily digest lists a PR that's waiting on you |
+
+Everything is on by default. You're never pinged for your own actions. Other names in a message
+show as Discord names without pinging anyone.
+
+Members change their own settings with `/notify`:
+
+- `/notify` shows your current settings.
+- `/notify mentions:False` turns one off. `/notify mentions:True` turns it back on.
+- `/notify all:False` turns everything off.
+
+Settings are kept if you verify again with the same GitHub account.
+
+## Daily PR digest
+
+On weekdays at 14:00 UTC (9am US Eastern in winter, 10am in summer), the bot posts one message in the
+GitHub channel listing every open PR in the org, grouped as:
+
+- 👀 **Waiting on review**, with who it's waiting on
+- ✏️ **Changes requested**, waiting on the author
+- 🙋 **Needs a reviewer**
+- ✅ **Approved, ready to merge**
+
+Drafts are counted but not listed. ⏰ marks PRs with no activity for 3+ days. Reviewers who are
+holding a PR up, and authors who owe changes, are pinged unless they've turned off `digest`. Nothing
+is posted on days with no open PRs.
+
+Admins can post it any time with `/digest`. To change the time, edit the second `crons` entry in
+`wrangler.toml` (times are UTC) and run `npx wrangler deploy`.
+
+**Give the digest access to private repos (recommended).** Without a token, the digest only sees
+public repos, and GitHub limits how often it can ask.
+
+1. On GitHub, go to your **Settings → Developer settings → Personal access tokens → Fine-grained
+   tokens → Generate new token**.
+2. **Token name:** `Daedalus digest`. **Resource owner:** `Daedalus-Data-Labs-LLC`.
+   **Expiration:** the longest your org allows. Set a reminder to renew it.
+3. **Repository access:** All repositories.
+4. **Permissions → Repository permissions → Pull requests:** Read-only. (Metadata: Read-only is
+   added automatically.) Nothing else.
+5. Click **Generate token** and copy it. If your org requires approval, approve it under
+   **Org Settings → Personal access tokens → Pending requests**.
+6. Save it on the Worker:
+   ```bash
+   npx wrangler secret put GITHUB_TOKEN
+   ```
+
+If the token expires or GitHub stops answering, the digest posts a warning in the admin channel
+instead.
+
+## Adding or updating commands
+
+After a change to the bot's slash commands, re-register them (leave the #verify channel ID blank so
+the panel isn't posted again):
+
+```bash
+node scripts/setup-discord.mjs
+```
 
 ## Changing the relay
 

@@ -3,8 +3,8 @@
 // an admin decides whether to remove the person from the org.
 
 import { alertAdmins, discordApi } from "./util.js";
-import { clean, rosterId } from "./relay.js";
-import { listRoster } from "./auth.js";
+import { clean } from "./relay.js";
+import { listRoster, rosterId } from "./people.js";
 
 export async function sweep(env) {
   if (!env.PEOPLE || !env.DISCORD_BOT_TOKEN || !env.DISCORD_GUILD_ID) return;

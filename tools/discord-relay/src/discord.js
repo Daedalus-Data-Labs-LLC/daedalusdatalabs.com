@@ -1,9 +1,12 @@
-// Discord interactions: the "Verify GitHub" button and the /verify command.
+// Discord interactions. Every reply is private (only the person sees it).
 //
-// Both reply privately (only the clicker sees it) with a personal sign-in
-// link that expires after 10 minutes.
+//   Verify GitHub button, /verify   a personal sign-in link (expires in 10 minutes)
+//   /notify                         show or change your ping settings
+//   /digest                         admins: post the PR digest now
 
 import { EPHEMERAL, fromHex, signState } from "./util.js";
+import { PREFS, findByDiscord } from "./people.js";
+import { postDigest } from "./digest.js";
 
 const LINK_TTL_MS = 10 * 60 * 1000;
 const PING = 1;
@@ -12,7 +15,7 @@ const COMPONENT = 3;
 const PONG = 1;
 const REPLY = 4;
 
-export async function handleInteraction(request, env) {
+export async function handleInteraction(request, env, ctx) {
   const body = await request.text();
   const ok = await verifyDiscord(
     env.DISCORD_PUBLIC_KEY,
@@ -25,6 +28,12 @@ export async function handleInteraction(request, env) {
   const i = JSON.parse(body);
   if (i.type === PING) return json({ type: PONG });
 
+  if (i.guild_id !== env.DISCORD_GUILD_ID) {
+    return reply("Run this inside the Daedalus Discord server.");
+  }
+  if (i.type === COMMAND && i.data?.name === "notify") return notify(i, env);
+  if (i.type === COMMAND && i.data?.name === "digest") return digest(i, env, ctx);
+
   const wantsVerify =
     (i.type === COMMAND && i.data?.name === "verify") ||
     (i.type === COMPONENT && i.data?.custom_id === "verify");
@@ -32,9 +41,6 @@ export async function handleInteraction(request, env) {
 
   if (!env.PEOPLE || !env.GITHUB_CLIENT_ID) {
     return reply("Verification isn't set up yet. Please let an admin know.");
-  }
-  if (i.guild_id !== env.DISCORD_GUILD_ID) {
-    return reply("Run this inside the Daedalus Discord server.");
   }
 
   const user = i.member?.user ?? i.user;
@@ -51,6 +57,42 @@ export async function handleInteraction(request, env) {
       "No GitHub account yet? [Create one](https://github.com/signup), then click **Verify GitHub** again.",
     [{ type: 1, components: [{ type: 2, style: 5, label: "Sign in with GitHub", url }] }],
   );
+}
+
+// /notify with no options shows your settings; each option turns one on or off.
+// "all" sets every one at once, and individual options still win over it.
+async function notify(i, env) {
+  if (!env.PEOPLE) return reply("Pings aren't set up yet. Please let an admin know.");
+  const user = i.member?.user ?? i.user;
+  const me = await findByDiscord(env.PEOPLE, user.id);
+  if (!me) {
+    return reply("Your GitHub account isn't linked yet. Click **Verify GitHub** in #verify first, then try again.");
+  }
+
+  const options = Object.fromEntries((i.data.options ?? []).map((o) => [o.name, o.value]));
+  const settings = { ...me.metadata.notify };
+  if (typeof options.all === "boolean") for (const key of Object.keys(PREFS)) settings[key] = options.all;
+  for (const key of Object.keys(PREFS)) if (typeof options[key] === "boolean") settings[key] = options[key];
+
+  const changed = Object.keys(options).length > 0;
+  if (changed) await env.PEOPLE.put(me.login, me.value, { metadata: { ...me.metadata, notify: settings } });
+
+  const rows = Object.entries(PREFS).map(([key, label]) => `${settings[key] === false ? "🔕" : "🔔"} ${label} · \`${key}\``);
+  return reply(
+    `${changed ? "**Saved.** " : ""}Pings for GitHub **${me.login}**:\n${rows.join("\n")}\n\n` +
+      "Change one with, for example, `/notify mentions:False`, or all at once with `/notify all:False`.",
+  );
+}
+
+// Admins only. Discord also hides the command from everyone without Manage Server.
+const MANAGE_GUILD = 1n << 5n;
+const ADMINISTRATOR = 1n << 3n;
+
+function digest(i, env, ctx) {
+  const perms = BigInt(i.member?.permissions ?? "0");
+  if (!(perms & (MANAGE_GUILD | ADMINISTRATOR))) return reply("Only admins can post the digest.");
+  ctx?.waitUntil?.(postDigest(env));
+  return reply("Posting the PR digest in the GitHub channel now. If there are no open PRs, nothing is posted.");
 }
 
 async function verifyDiscord(publicKeyHex, signatureHex, timestamp, body) {

@@ -1,10 +1,11 @@
-// One-time Discord setup: registers the /verify command in your server and
-// posts the "Verify GitHub" panel in the #verify channel.
+// Discord setup: registers the bot's slash commands (/verify, /notify, /digest)
+// in your server, and optionally posts the "Verify GitHub" panel in #verify.
 //
 //   node scripts/setup-discord.mjs
 //
 // It asks for four values (see README.md, "Verify members with GitHub").
-// Nothing is saved; run it again any time to re-post the panel.
+// Leave the #verify channel ID blank to update the commands without posting
+// another panel. Nothing is saved; run it again whenever commands change.
 
 import { createInterface } from "node:readline/promises";
 
@@ -14,7 +15,7 @@ const ask = async (name, question) => process.env[name] || (await rl.question(`$
 const appId = await ask("DISCORD_APPLICATION_ID", "Discord Application ID");
 const token = await ask("DISCORD_BOT_TOKEN", "Discord bot token");
 const guildId = await ask("DISCORD_GUILD_ID", "Discord server ID");
-const channelId = await ask("DISCORD_VERIFY_CHANNEL_ID", "#verify channel ID");
+const channelId = await ask("DISCORD_VERIFY_CHANNEL_ID", "#verify channel ID (leave blank to skip posting the panel)");
 rl.close();
 
 async function discord(method, path, body) {
@@ -30,10 +31,37 @@ async function discord(method, path, body) {
   return res.json();
 }
 
+const BOOL = 5;
+const pref = (name, description) => ({ type: BOOL, name, description, required: false });
+
 await discord("PUT", `/applications/${appId}/guilds/${guildId}/commands`, [
   { name: "verify", description: "Link your GitHub account to your Discord account", type: 1 },
+  {
+    name: "notify",
+    description: "Show or change which GitHub events ping you",
+    type: 1,
+    options: [
+      pref("all", "Turn every ping on or off"),
+      pref("review_requests", "Someone asks you to review a PR"),
+      pref("assignments", "You're assigned a PR or issue"),
+      pref("my_work", "Activity on PRs and issues you opened"),
+      pref("mentions", "You're @mentioned on GitHub"),
+      pref("digest", "You're waiting on something in the daily digest"),
+    ],
+  },
+  {
+    name: "digest",
+    description: "Post the open-PR digest now",
+    type: 1,
+    default_member_permissions: String(1 << 5), // Manage Server
+  },
 ]);
-console.log("✓ Registered /verify");
+console.log("✓ Registered /verify, /notify and /digest");
+
+if (!channelId) {
+  console.log("Skipped posting the Verify panel.");
+  process.exit(0);
+}
 
 await discord("POST", `/channels/${channelId}/messages`, {
   content:
