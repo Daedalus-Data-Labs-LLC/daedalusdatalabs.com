@@ -8,7 +8,8 @@
 //                 GitHub authorization straight away, so nothing is kept.
 
 import { alertAdmins, discordApi, escapeHtml, page, readState } from "./util.js";
-import { clean, rosterId } from "./relay.js";
+import { clean } from "./relay.js";
+import { listRoster, rosterId } from "./people.js";
 
 const UA = "daedalus-discord-relay";
 
@@ -67,7 +68,8 @@ export async function authCallback(request, env, ctx) {
   // 2. Update the roster: drop any older GitHub link for this Discord user,
   //    and note if this GitHub account was linked to someone else before.
   const key = login.toLowerCase();
-  const previousOwner = rosterId(await env.PEOPLE.get(key));
+  const existing = await env.PEOPLE.getWithMetadata(key);
+  const previousOwner = existing.metadata?.discord ?? rosterId(existing.value);
   const dropped = [];
   for (const entry of await listRoster(env.PEOPLE)) {
     if (entry.name !== key && entry.metadata?.discord === state.d) {
@@ -75,8 +77,10 @@ export async function authCallback(request, env, ctx) {
       dropped.push(entry.name);
     }
   }
+  // Keep the member's ping settings if they're re-verifying the same account.
+  const notify = previousOwner === state.d ? existing.metadata?.notify : undefined;
   await env.PEOPLE.put(key, `${state.d} ${state.n}`, {
-    metadata: { discord: state.d, name: state.n, verified: new Date().toISOString() },
+    metadata: { discord: state.d, name: state.n, verified: new Date().toISOString(), ...(notify && { notify }) },
   });
 
   // 3. Give them the Verified role.
@@ -99,17 +103,6 @@ export async function authCallback(request, env, ctx) {
     `<p>Your Discord account is now linked to GitHub <strong>${escapeHtml(login)}</strong>.</p>
 ${roleOk ? "<p>You now have access to the rest of the server. You can close this tab.</p>" : "<p>We couldn't unlock your channels automatically. An admin has been told and will sort it out shortly.</p>"}`,
   );
-}
-
-export async function listRoster(people) {
-  const entries = [];
-  let cursor;
-  do {
-    const page = await people.list({ cursor });
-    entries.push(...page.keys);
-    cursor = page.list_complete ? undefined : page.cursor;
-  } while (cursor);
-  return entries;
 }
 
 // Remove the app's authorization so no token outlives the sign-in. It also

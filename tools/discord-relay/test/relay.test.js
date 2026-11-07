@@ -51,7 +51,7 @@ test("merged PR: summary line plus spoilered details", async () => {
   assert.equal(summary, "🔀 **octo\\_cat** merged PR #12 into `main` · *daedalusdatalabs.com*");
   assert.match(details, /^\|\|\*\*Fix nav spacing on mobile\*\* · `fix\/nav_spacing` → `main` · 3 commits · \+42 \/ −17 · 4 files · \[View PR\]\(.+\)\|\|$/);
   assert.equal(flags, 4);
-  assert.deepEqual(allowed_mentions, { parse: [] });
+  assert.deepEqual(allowed_mentions, { parse: [], users: [] });
 });
 
 test("push lists commits behind a spoiler", () => {
@@ -93,14 +93,14 @@ test("branch creation is a single line", () => {
     "🌱 **octo\\_cat** created branch `claude/x` · *daedalusdatalabs.com*");
 });
 
-const kv = (map) => ({ get: async (k) => map[k] ?? null });
+const kv = (map) => ({ get: async (k) => map[k] ?? null, getWithMetadata: async (k) => ({ value: map[k] ?? null, metadata: null }) });
 
 test("mapped GitHub login shows as a Discord mention that never pings", async () => {
   env.PEOPLE = kv({ octo_cat: "123456789012345678 Octo (design)" });
   const { sent } = await send("create", { ref: "x", ref_type: "branch", repository, sender: { login: "Octo_Cat" } });
   delete env.PEOPLE;
   assert.equal(sent[0].body.content, "🌱 <@123456789012345678> created branch `x` · *daedalusdatalabs.com*");
-  assert.deepEqual(sent[0].body.allowed_mentions, { parse: [] });
+  assert.deepEqual(sent[0].body.allowed_mentions, { parse: [], users: [] }); // shown, not pinged
 });
 
 test("unmapped people show their GitHub login, flagged as unlinked", async () => {

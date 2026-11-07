@@ -4,6 +4,7 @@
 // behind a Discord spoiler so viewers click to reveal them.
 
 import { hmacHex, timingSafeEqual, postToDiscord } from "./util.js";
+import { resolvePeople, rosterId, wants } from "./people.js";
 
 const MAX_COMMITS = 5;
 
@@ -22,11 +23,13 @@ export async function handleGitHub(request, env) {
   }
 
   const event = request.headers.get("x-github-event");
-  const who = await displayName(env.PEOPLE, payload.sender?.login, payload.sender?.type);
-  const message = format(event, payload, who);
+  const targets = pingTargets(event, payload);
+  const people = await resolvePeople(env.PEOPLE, [payload.sender?.login, ...involvedLogins(payload), ...targets.map((t) => t.login)]);
+  const message = format(event, payload, nameResolver(people, !!env.PEOPLE));
   if (!message) return new Response("Ignored", { status: 202 });
 
-  const res = await postToDiscord(env.DISCORD_WEBHOOK_URL, message);
+  const { content, ping } = addPings(message, targets, people, payload.sender?.login);
+  const res = await postToDiscord(env.DISCORD_WEBHOOK_URL, content, ping);
   if (!res.ok) return new Response(`Discord error ${res.status}`, { status: 502 });
   return new Response("Sent");
 }
@@ -62,29 +65,96 @@ function msg(icon, summary, repo, details) {
   return details ? `${head}\n||${details}||` : head;
 }
 
-// A Discord mention renders as the person's current server name. It never
-// pings them, because every message sets allowed_mentions to none. People
-// not in the roster are flagged "(unlinked)" so they get nudged to verify.
+// A Discord mention renders as the person's current server name. Only the
+// people chosen in addPings are actually pinged; every other mention is shown
+// without a notification. People not in the roster are flagged "(unlinked)"
+// so they get nudged to verify.
+export function nameResolver(people, hasRoster) {
+  return (login, type = "User") => {
+    const person = login && people.get(login.toLowerCase());
+    if (person) return `<@${person.id}>`;
+    const plain = `**${clean(login)}**`;
+    return hasRoster && type !== "Bot" ? `${plain} *(unlinked)*` : plain;
+  };
+}
+
 export async function displayName(people, login, type = "User") {
-  const plain = `**${clean(login)}**`;
-  if (!people || !login) return plain;
-  try {
-    const id = rosterId(await people.get(login.toLowerCase()));
-    if (id) return `<@${id}>`;
-  } catch {
-    return plain; // KV unavailable
+  return nameResolver(await resolvePeople(people, [login]), !!people)(login, type);
+}
+
+export { rosterId };
+
+// ---------- pings ----------
+
+// Who should be pinged for this event, and which of their settings allows it.
+export function pingTargets(event, p) {
+  const t = [];
+  const add = (login, pref) => login && t.push({ login, pref });
+  const mentions = (text) => mentionedLogins(text).forEach((l) => add(l, "mentions"));
+
+  switch (event) {
+    case "pull_request":
+      if (p.action === "review_requested") add(p.requested_reviewer?.login, "review_requests");
+      if (p.action === "assigned") add(p.assignee?.login, "assignments");
+      if (p.action === "closed") add(p.pull_request.user?.login, "my_work");
+      if (p.action === "opened") mentions(p.pull_request.body);
+      break;
+    case "pull_request_review":
+      if (p.action === "submitted") {
+        add(p.pull_request.user?.login, "my_work");
+        mentions(p.review.body);
+      }
+      break;
+    case "issues":
+      if (p.action === "assigned") add(p.assignee?.login, "assignments");
+      if (p.action === "closed") add(p.issue.user?.login, "my_work");
+      if (p.action === "opened") mentions(p.issue.body);
+      break;
+    case "issue_comment":
+      if (p.action === "created") {
+        add(p.issue.user?.login, "my_work");
+        mentions(p.comment.body);
+      }
+      break;
   }
-  return type === "Bot" ? plain : `${plain} *(unlinked)*`;
+  return t;
 }
 
-// Roster value: the Discord user ID, optionally followed by a note (e.g. a name).
-export function rosterId(value) {
-  const id = value?.trim().split(/\s+/)[0];
-  return id && /^\d{17,20}$/.test(id) ? id : null;
+// Other people named in the message itself.
+function involvedLogins(p) {
+  return [p.requested_reviewer?.login, p.assignee?.login];
 }
 
-export function format(event, p, who = `**${clean(p.sender?.login)}**`) {
+// GitHub @mentions in free text. Skips emails (a@b.com) and team mentions (@org/team).
+export function mentionedLogins(text) {
+  const found = new Set();
+  const re = /(?:^|[^\w`@./-])@([a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38})(?![\w/-])/gi;
+  for (const m of String(text ?? "").matchAll(re)) found.add(m[1]);
+  return [...found].slice(0, 10);
+}
+
+// Picks who to ping (linked, setting on, not the person who did it) and makes
+// sure each of them is mentioned on the summary line, since Discord only
+// notifies people whose mention appears in the message.
+export function addPings(message, targets, people, senderLogin) {
+  const sender = senderLogin?.toLowerCase();
+  const ping = [];
+  for (const { login, pref } of targets) {
+    const person = people.get(login.toLowerCase());
+    if (!person || login.toLowerCase() === sender || ping.includes(person.id)) continue;
+    if (wants(person, pref)) ping.push(person.id);
+  }
+  const missing = ping.filter((id) => !message.includes(`<@${id}>`));
+  if (!missing.length) return { content: message, ping };
+  const [head, ...rest] = message.split("\n");
+  const bell = ` · 🔔 ${missing.map((id) => `<@${id}>`).join(" ")}`;
+  return { content: [head + bell, ...rest].join("\n"), ping };
+}
+
+// `name` turns a GitHub login into how it's shown (a Discord mention or bold text).
+export function format(event, p, name = (login) => `**${clean(login)}**`) {
   const repo = p.repository?.name ?? "";
+  const who = name(p.sender?.login, p.sender?.type);
 
   switch (event) {
     case "push": {
@@ -116,6 +186,14 @@ export function format(event, p, who = `**${clean(p.sender?.login)}**`) {
           return msg("👀", `${who} marked ${num} ready for review`, repo, details);
         case "reopened":
           return msg("🔁", `${who} reopened ${num}`, repo, details);
+        case "review_requested": {
+          const reviewer = p.requested_reviewer
+            ? name(p.requested_reviewer.login, p.requested_reviewer.type)
+            : `team ${code(p.requested_team?.name ?? "?")}`;
+          return msg("🙋", `${who} requested a review from ${reviewer} on ${num}`, repo, details);
+        }
+        case "assigned":
+          return msg("📋", `${who} assigned ${num} to ${assigneeName(p, name)}`, repo, details);
         case "closed":
           return pr.merged
             ? msg("🔀", `${who} merged ${num} into ${code(pr.base.ref)}`, repo, details)
@@ -137,6 +215,10 @@ export function format(event, p, who = `**${clean(p.sender?.login)}**`) {
 
     case "issues": {
       const i = p.issue;
+      if (p.action === "assigned") {
+        return msg("📋", `${who} assigned issue #${i.number} to ${assigneeName(p, name)}`, repo,
+          `**${clean(i.title)}** · ${link("View issue", i.html_url)}`);
+      }
       const actions = { opened: "🐛 opened", closed: "☑️ closed", reopened: "🔁 reopened" };
       if (!actions[p.action]) return null;
       const [icon, verb] = actions[p.action].split(" ");
@@ -173,6 +255,10 @@ export function format(event, p, who = `**${clean(p.sender?.login)}**`) {
     default:
       return null; // ping and anything unhandled
   }
+}
+
+function assigneeName(p, name) {
+  return p.assignee?.login === p.sender?.login ? "themselves" : name(p.assignee?.login, p.assignee?.type);
 }
 
 // A merge from GitHub's UI (merge, squash or rebase) shows up as a push by

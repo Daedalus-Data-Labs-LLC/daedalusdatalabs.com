@@ -15,6 +15,7 @@ function fakeKv(initial = {}) {
   return {
     store,
     get: async (k) => store.get(k)?.value ?? null,
+    getWithMetadata: async (k) => ({ value: store.get(k)?.value ?? null, metadata: store.get(k)?.metadata ?? null }),
     put: async (k, value, opts = {}) => store.set(k, { value, metadata: opts.metadata }),
     delete: async (k) => store.delete(k),
     list: async () => ({ keys: [...store].map(([name, e]) => ({ name, metadata: e.metadata })), list_complete: true }),
