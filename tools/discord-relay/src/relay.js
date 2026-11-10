@@ -5,6 +5,8 @@
 
 import { hmacHex, timingSafeEqual, postToDiscord } from "./util.js";
 import { resolvePeople, rosterId, wants } from "./people.js";
+import { brainCall } from "./budget.js";
+import { jobsForPush } from "./knowledge.js";
 
 const MAX_COMMITS = 5;
 
@@ -23,6 +25,13 @@ export async function handleGitHub(request, env) {
   }
 
   const event = request.headers.get("x-github-event");
+
+  // Keep the knowledge index current: re-index files changed on the default branch.
+  if (event === "push" && env.BRAIN && env.KB) {
+    const jobs = jobsForPush(payload);
+    if (jobs.length) await brainCall(env, "jobs.enqueue", { jobs }).catch((err) => console.error("index enqueue:", err));
+  }
+
   const targets = pingTargets(event, payload);
   const people = await resolvePeople(env.PEOPLE, [payload.sender?.login, ...involvedLogins(payload), ...targets.map((t) => t.login)]);
   const message = format(event, payload, nameResolver(people, !!env.PEOPLE));

@@ -7,6 +7,7 @@
 //   every 15 minutes      Alert admins when a linked member leaves (sweep.js)
 //   weekdays (see wrangler.toml)  Daily PR digest (digest.js)
 //   GatewayBot Durable Object     Always-on Discord connection for @Daedalus questions (gateway.js, ask.js, agent.js)
+//   Brain Durable Object          Team data (decisions, reminders, usage) and indexing jobs (brain.js, knowledge.js)
 //
 // See README.md for the secrets each part needs.
 
@@ -18,6 +19,7 @@ import { postDigest } from "./digest.js";
 import { ensureGateway } from "./gateway.js";
 
 export { GatewayBot } from "./gateway.js";
+export { Brain } from "./brain.js";
 
 const SWEEP_CRON = "*/15 * * * *";
 

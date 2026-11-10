@@ -7,6 +7,10 @@ GITHUB_ORG = "Daedalus-Data-Labs-LLC"
 # @Daedalus assistant: free Cloudflare model, and questions per person per day (UTC).
 WORKERS_AI_MODEL = "@cf/zai-org/glm-4.7-flash"
 AI_DAILY_LIMIT = "20"
+# Estimated Neurons the bot may use per day, leaving a margin under Cloudflare's free 10,000.
+AI_DAILY_NEURONS = "9000"
+# Timezone for reminders until someone sets their own with /timezone.
+DEFAULT_TIMEZONE = "America/New_York"
 # Used instead of Workers AI once the ANTHROPIC_API_KEY secret is set.
 ANTHROPIC_MODEL = "claude-opus-5-5"
 
@@ -19,9 +23,23 @@ binding = "AI"
 name = "GATEWAY"
 class_name = "GatewayBot"
 
+# The Brain: team data (decisions, reminders, usage) and indexing jobs, in its own SQLite database.
+[[durable_objects.bindings]]
+name = "BRAIN"
+class_name = "Brain"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["GatewayBot"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["Brain"]
+
+# Knowledge index (code, docs and saved decisions). Create it once; see README, "Team brain".
+[[vectorize]]
+binding = "KB"
+index_name = "daedalus-kb"
 
 # Every 15 minutes: check for linked members who left the Discord server.
 # Weekdays at 14:00 UTC (9am US Eastern in winter, 10am in summer): daily PR digest.

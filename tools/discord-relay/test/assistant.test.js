@@ -51,7 +51,7 @@ test("gateway: identifies with the message intents, then heartbeats on alarms", 
   const { bot, storage, sent } = gatewayBot();
   await bot.onMessage(JSON.stringify({ op: 10, d: { heartbeat_interval: 40000 } }));
   assert.equal(sent[0].op, 2);
-  assert.equal(sent[0].d.intents, (1 << 0) | (1 << 9) | (1 << 15));
+  assert.equal(sent[0].d.intents, (1 << 0) | (1 << 9) | (1 << 10) | (1 << 15));
   assert.ok(storage.alarm > 0);
 
   await bot.onMessage(JSON.stringify({ op: 0, t: "READY", s: 1, d: { session_id: "s1", resume_gateway_url: "wss://resume.discord.gg", user: { id: BOT, username: "Daedalus" } } }));

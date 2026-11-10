@@ -10,7 +10,9 @@ A Cloudflare Worker that:
 - alerts admins when a linked member leaves the Discord server;
 - pings people when something on GitHub needs them, with per-person settings (`/notify`);
 - posts a daily digest of open PRs and who each one is waiting on;
-- answers questions about your GitHub projects when someone writes `@Daedalus` in Discord.
+- answers questions about your GitHub projects when someone writes `@Daedalus` in Discord;
+- keeps a team brain: a searchable index of your code and docs, a decisions log, thread summaries,
+  "what's on my plate", and reminders, all on Cloudflare's free plan.
 
 ```
 🔀 **warren** merged PR #12 into `main` · *daedalusdatalabs.com*
@@ -345,6 +347,67 @@ Anthropic's recommended fallback model. To go back to the free model, run
 **Change the model or the limit:** edit `WORKERS_AI_MODEL`, `ANTHROPIC_MODEL` or `AI_DAILY_LIMIT`
 in `wrangler.toml` and run `npx wrangler deploy`. Workers AI retires models over time; run
 `npx wrangler ai models list` to see what's available, and pick one marked for function calling.
+
+## Team brain
+
+Built on the `@Daedalus` assistant. Everything below runs on Cloudflare's free plan.
+
+| Feature | How to use it | Uses AI? |
+|---|---|---|
+| **Knowledge index** | Automatic. Answers start from excerpts of your code, docs and saved decisions | A little (embeddings) |
+| **Decisions log** | React 📌 to a message, or *@Daedalus remember: we deploy from main only*. `/decisions` lists them; `/forget` removes one | A little |
+| **Thread summaries** | *@Daedalus summarize this thread*, with a button to save the summary as a decision | Yes |
+| **What's on my plate** | *@Daedalus what's on my plate?* or `/plate` | No |
+| **Reminders** | *@Daedalus remind me tomorrow 9am to review PR #24*, or `/remind`. `/reminders` lists yours with Cancel buttons; `/timezone` sets your timezone | No |
+| **Usage** (admins) | `/usage`: today's AI use, index size, pending reminders | No |
+| **Help** | *@Daedalus help* | No |
+
+**How it stays free**
+
+- **One daily AI budget** (`AI_DAILY_NEURONS`, 9,000 of Cloudflare's free 10,000 Neurons) shared
+  by priority: answers can use all of it, summaries stop at 90%, and indexing stops at 60% and
+  resumes the next day. `/usage` shows where it went.
+- **The Brain** (a second Durable Object with its own SQLite database) stores decisions, reminders,
+  settings and usage, and runs reminders and indexing on alarms. It's only awake for the seconds
+  that work takes, so it barely touches the Durable Object allowance.
+- **Indexing is incremental.** Pushes to a repo's default branch re-index only the changed files,
+  and unchanged files are skipped. Embeddings cost about 0.002 Neurons per token, so indexing a few
+  hundred files costs well under 1,000 Neurons, once.
+- **Answers start from the index,** so most questions need few or no GitHub calls and less AI.
+- **No AI** for plate, reminders, saving decisions or help.
+- **Privacy:** nothing is saved from Discord unless someone pins it, says "remember", or saves a
+  summary. Text that looks like a secret is masked before it's indexed or saved.
+
+**Turn it on (once)**
+
+Run these from `tools/discord-relay`.
+
+1. Create the knowledge index, then its filter on `kind` (the filter must exist before anything is
+   indexed):
+   ```bash
+   npx wrangler vectorize create daedalus-kb --dimensions=384 --metric=cosine
+   ```
+   ```bash
+   npx wrangler vectorize create-metadata-index daedalus-kb --property-name=kind --type=string
+   ```
+2. Make sure `GITHUB_TOKEN` is set with read-only **Contents**, **Issues** and **Pull requests** (see
+   "Daily PR digest"). Indexing reads files with it; without it, only public repos are indexed.
+3. In Discord, make sure the bot's role can **Add Reactions** (to confirm 📌 saves with ✅).
+4. Deploy:
+   ```bash
+   npx wrangler deploy
+   ```
+5. Register the new commands (leave the #verify channel ID blank):
+   ```bash
+   node scripts/setup-discord.mjs
+   ```
+6. In Discord, run `/reindex` (admins) to build the index. The bot posts in the admin channel when
+   it's done. Each person can run `/timezone` once so reminders use their local time; until then,
+   reminders use `DEFAULT_TIMEZONE` (`America/New_York`).
+
+**Reminder times** understood: *in 20 minutes*, *in 2 hours*, *tomorrow*, *tomorrow 9am*, *friday at
+3pm*, *next monday*, *at 5pm*, *tonight*, *noon*, *2026-11-20 9:30*, *11/20 at 4pm*. A day without a
+time means 9am. An hour from 1 to 7 without am/pm means pm.
 
 ## Adding or updating commands
 

@@ -4,12 +4,37 @@
 //   any message in a thread it started   -> follow-up; the thread so far is the context
 //   "@Daedalus" anywhere else (e.g. someone else's thread) -> answer in place
 //
+// A few requests are recognized without AI and answered in place (free):
+//   remember: ...  ·  summarize this thread  ·  what's on my plate?  ·  remind me ...  ·  help
+//
 // Only Verified members can ask, and each person gets AI_DAILY_LIMIT questions
 // per day (UTC), so one person can't use up the free AI allowance.
 
 import { discordApi } from "./util.js";
 import { AgentError, runAgent } from "./agent.js";
 import { findByDiscord } from "./people.js";
+import { brainCall } from "./budget.js";
+import { messageUrl, saveDecision } from "./decisions.js";
+import { saveButton, summarizeChannel } from "./summarize.js";
+import { plate } from "./plate.js";
+import { parseReminder } from "./when.js";
+
+export const HELP = `**What I can do**
+• **Ask me anything** about our GitHub projects: *@Daedalus how does the verify flow work?* I'll answer in a thread; follow-ups there don't need the @.
+• **Remember a decision:** *@Daedalus remember: we deploy the site from main only*, or react 📌 to any message. I use saved decisions when answering. See them with \`/decisions\`.
+• **Summarize:** *@Daedalus summarize this thread*
+• **Your work:** *@Daedalus what's on my plate?* or \`/plate\`
+• **Reminders:** *@Daedalus remind me tomorrow 9am to review PR #24*, or \`/remind\`. Set your timezone with \`/timezone\`; see yours with \`/reminders\`.
+• **Pings:** choose which GitHub events ping you with \`/notify\`.`;
+
+const INTENTS = {
+  help: /^(?:help|what can you do|commands)\??$/i,
+  // "remember: X", "note - X", "decision: X", or "remember that X" (not "remember when...?")
+  remember: /^(?:please\s+)?(?:(?:remember|note|save|decision)(?:\s+this)?\s*[:\u2013-]\s*|(?:remember|note)\s+that\s+)([\s\S]+)$/i,
+  summarize: /^(?:please\s+)?(?:summari[sz]e|recap|tl;?dr)\b/i,
+  plate: /(?:what'?s|what is|show(?: me)?)\s+on\s+my\s+plate|^my\s+(?:plate|work|prs|reviews)\??$/i,
+  remind: /^(?:please\s+)?remind\s+(?:me|us)\b/i,
+};
 
 const SUPPRESS_EMBEDS = 1 << 2;
 const MAX_MESSAGE = 2000;
@@ -31,9 +56,52 @@ export async function handleMessage(m, { env, storage, botId }) {
     return send(env, m.channel_id, "Hi! Ask me anything about Daedalus's GitHub projects, for example: *what changed in the site this week?*", m.id);
   }
 
+  const reply = (text, extra) => send(env, m.channel_id, text, m.id, extra);
+  const intent = Object.keys(INTENTS).find((k) => INTENTS[k].test(question));
+
+  if (intent === "help") return reply(HELP);
+  if (intent === "remember" && env.BRAIN) {
+    const text = question.match(INTENTS.remember)[1].trim();
+    const { id } = await saveDecision(env, {
+      text,
+      authorId: m.author.id,
+      authorName: name(m),
+      savedBy: name(m),
+      sourceUrl: messageUrl(m.guild_id, m.channel_id, m.id),
+      messageId: m.id,
+    });
+    return reply(`📌 Saved to decisions as **#${id}**. I'll use it when answering questions.`);
+  }
+  if (intent === "plate") {
+    const me = env.PEOPLE ? await findByDiscord(env.PEOPLE, m.author.id).catch(() => null) : null;
+    if (!me) return reply("I don't know your GitHub account yet. Click **Verify GitHub** in #verify first.");
+    const text = await plate(env, me.login).catch(() => "I couldn't reach GitHub just now. Try again in a moment.");
+    return reply(text);
+  }
+  if (intent === "remind" && env.BRAIN) {
+    const tz = (await brainCall(env, "settings.get", { userId: m.author.id, key: "tz" })) || env.DEFAULT_TIMEZONE || "UTC";
+    const r = parseReminder(question, tz);
+    if (r.error) return reply(r.error);
+    await brainCall(env, "reminders.add", { userId: m.author.id, channelId: m.channel_id, text: r.what, dueAt: r.dueAt, sourceUrl: messageUrl(m.guild_id, m.channel_id, m.id) });
+    const t = Math.floor(r.dueAt / 1000);
+    return reply(`⏰ Got it. I'll remind you <t:${t}:F> (<t:${t}:R>): ${r.what}\n-# Times use your timezone (${tz}). Change it with \`/timezone\`.`);
+  }
+
   const limit = Number(env.AI_DAILY_LIMIT ?? 20);
   if (!(await takeQuota(storage, m.author.id, limit))) {
     return send(env, m.channel_id, `You've used your ${limit} questions for today. They reset at 00:00 UTC.`, m.id);
+  }
+
+  if (intent === "summarize") {
+    const typing = keepTyping(env, m.channel_id);
+    const result = await summarizeChannel(env, m.channel_id, botId).catch((err) => {
+      console.error("summarize:", err);
+      return { error: "I couldn't summarize that just now. Try again in a moment." };
+    });
+    typing.stop();
+    if (!result) return reply("There isn't enough conversation here to summarize yet.");
+    if (result.error) return reply(result.error);
+    return reply(`📝 **Summary of the last ${result.count} messages**\n${result.text}`.slice(0, MAX_MESSAGE), { components: [saveButton] });
   }
 
   // Where the answer goes, and what the conversation so far is.
@@ -118,7 +186,7 @@ function keepTyping(env, channel) {
   return { stop: () => clearInterval(timer) };
 }
 
-function send(env, channel, content, replyTo) {
+function send(env, channel, content, replyTo, extra = {}) {
   return discordApi(env, `/channels/${channel}/messages`, {
     method: "POST",
     body: JSON.stringify({
@@ -126,6 +194,7 @@ function send(env, channel, content, replyTo) {
       flags: SUPPRESS_EMBEDS,
       allowed_mentions: { parse: [], replied_user: false },
       ...(replyTo && { message_reference: { message_id: replyTo, fail_if_not_exists: false } }),
+      ...extra,
     }),
   }).catch((err) => console.error("send failed:", err));
 }

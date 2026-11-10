@@ -1,4 +1,4 @@
-// Discord setup: registers the bot's slash commands (/verify, /notify, /digest)
+// Discord setup: registers the bot's slash commands
 // in your server, and optionally posts the "Verify GitHub" panel in #verify.
 //
 //   node scripts/setup-discord.mjs
@@ -31,7 +31,10 @@ async function discord(method, path, body) {
 // Failures set the exit code instead of calling process.exit(), which can
 // crash Node on Windows while network connections are still closing.
 async function main() {
+  const STRING = 3;
+  const INTEGER = 4;
   const BOOL = 5;
+  const ADMIN = String(1 << 5); // Manage Server
   const pref = (name, description) => ({ type: BOOL, name, description, required: false });
 
   await discord("PUT", `/applications/${appId}/guilds/${guildId}/commands`, [
@@ -53,10 +56,36 @@ async function main() {
       name: "digest",
       description: "Post the open-PR digest now",
       type: 1,
-      default_member_permissions: String(1 << 5), // Manage Server
+      default_member_permissions: ADMIN,
     },
+    { name: "plate", description: "What's on your plate in GitHub: reviews, your PRs, assigned issues", type: 1 },
+    {
+      name: "remind",
+      description: "Set a reminder in this channel",
+      type: 1,
+      options: [
+        { type: STRING, name: "when", description: "e.g. in 2 hours · tomorrow 9am · friday at 3pm", required: true },
+        { type: STRING, name: "what", description: "What to remind you about", required: true },
+      ],
+    },
+    { name: "reminders", description: "Your upcoming reminders, with Cancel buttons", type: 1 },
+    {
+      name: "timezone",
+      description: "Show or set your timezone for reminders",
+      type: 1,
+      options: [{ type: STRING, name: "zone", description: "e.g. America/New_York, Europe/London", required: false }],
+    },
+    { name: "decisions", description: "The team's latest saved decisions", type: 1 },
+    {
+      name: "forget",
+      description: "Remove a saved decision",
+      type: 1,
+      options: [{ type: INTEGER, name: "id", description: "The decision number, from /decisions", required: true }],
+    },
+    { name: "usage", description: "Today's AI use and what the bot has stored", type: 1, default_member_permissions: ADMIN },
+    { name: "reindex", description: "Rebuild the knowledge index from every repo", type: 1, default_member_permissions: ADMIN },
   ]);
-  console.log("✓ Registered /verify, /notify and /digest");
+  console.log("✓ Registered /verify, /notify, /digest, /plate, /remind, /reminders, /timezone, /decisions, /forget, /usage and /reindex");
 
   if (!channelId) {
     console.log("Skipped posting the Verify panel.");
