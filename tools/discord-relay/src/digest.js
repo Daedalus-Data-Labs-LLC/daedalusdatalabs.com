@@ -36,7 +36,7 @@ export async function postDigest(env, now = Date.now()) {
   const query = encodeURIComponent(`org:${org} is:pr is:open archived:false`);
   const search = await gh(`/search/issues?q=${query}&sort=created&order=asc&per_page=${MAX_PRS}`).catch(() => null);
   if (!search?.ok) {
-    await alertAdmins(env, `⚠️ The daily PR digest was skipped: GitHub search failed (${search?.status ?? "no response"}). If this keeps happening, check that GITHUB_TOKEN hasn't expired.`);
+    await alertAdmins(env, `⚠️ The daily PR digest was skipped: GitHub search failed. ${await explainGitHubError(search, !!env.GITHUB_TOKEN)}`);
     return;
   }
   const { items = [], total_count: total = 0 } = await search.json();
@@ -86,6 +86,27 @@ export async function postDigest(env, now = Date.now()) {
   }
 
   await postToDiscord(env.DISCORD_WEBHOOK_URL, fit(lines), ping);
+}
+
+// Turn a failed GitHub response into a reason an admin can act on, quoting
+// GitHub's own message so a 403 says *why* it was refused.
+export async function explainGitHubError(res, hasToken) {
+  if (!res) return "GitHub didn't answer. It's probably a temporary outage; the next digest will try again.";
+  const body = await res.json().catch(() => ({}));
+  const said = body?.message ? ` GitHub said: "${clean(body.message, 300)}"` : "";
+  const status = `(${res.status})`;
+  const rateLimited =
+    res.status === 429 || res.headers.get("x-ratelimit-remaining") === "0" || /rate limit/i.test(body?.message ?? "");
+
+  if (rateLimited && !hasToken) {
+    return `${status} GitHub's rate limit for requests without a token was hit. Cloudflare Workers share IP addresses, so this happens often. Fix: set GITHUB_TOKEN (see the relay README, "Give the digest access to private repos").${said}`;
+  }
+  if (rateLimited) return `${status} GitHub's rate limit was hit. It resets within the hour; run /digest to try again.${said}`;
+  if (res.status === 401) return `${status} GITHUB_TOKEN is invalid or has expired. Generate a new one and save it with \`npx wrangler secret put GITHUB_TOKEN\`.${said}`;
+  if (res.status === 403) {
+    return `${status} GitHub refused GITHUB_TOKEN. Usually the org blocks fine-grained tokens, the token's lifetime is longer than the org allows, or the token is still waiting for org approval (Org Settings → Personal access tokens).${said}`;
+  }
+  return `${status}${said}`;
 }
 
 // What an open PR is waiting on, from its requested reviewers and each
