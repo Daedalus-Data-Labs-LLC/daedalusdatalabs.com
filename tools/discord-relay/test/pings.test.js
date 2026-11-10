@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
 import worker from "../src/index.js";
 import { mentionedLogins } from "../src/relay.js";
-import { classify, postDigest } from "../src/digest.js";
+import { classify, explainGitHubError, postDigest } from "../src/digest.js";
 
 const WARREN = "100000000000000001";
 const SAM = "100000000000000002";
@@ -251,6 +251,21 @@ test("digest alerts admins instead of posting when GitHub search fails", async (
   assert.equal(posted.length, 1);
   assert.equal(posted[0].url, "https://discord.test/admin");
   assert.match(posted[0].body.content, /digest was skipped.*401.*GITHUB_TOKEN/);
+});
+
+test("digest failure alerts say why GitHub refused", async () => {
+  const res = (status, message, headers = {}) =>
+    new Response(JSON.stringify({ message }), { status, headers: { "content-type": "application/json", ...headers } });
+
+  const anon = await explainGitHubError(res(403, "API rate limit exceeded for 1.2.3.4.", { "x-ratelimit-remaining": "0" }), false);
+  assert.match(anon, /\(403\) .*without a token.*set GITHUB_TOKEN.*GitHub said: "API rate limit exceeded/);
+
+  const policy = "The 'o' organization forbids access via a fine-grained personal access tokens if the token's lifetime is greater than 366 days.";
+  const forbidden = await explainGitHubError(res(403, policy), true);
+  assert.match(forbidden, /\(403\) GitHub refused GITHUB_TOKEN.*lifetime.*GitHub said: "The 'o' organization forbids/);
+
+  assert.match(await explainGitHubError(res(401, "Bad credentials"), true), /\(401\) GITHUB_TOKEN is invalid or has expired/);
+  assert.match(await explainGitHubError(null, true), /didn't answer/);
 });
 
 test("the digest cron runs the digest; the 15-minute cron runs the leave check", async () => {

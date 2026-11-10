@@ -270,7 +270,16 @@ public repos, and GitHub limits how often it can ask.
    ```
 
 If the token expires or GitHub stops answering, the digest posts a warning in the admin channel
-instead.
+instead. The warning quotes GitHub's reason. Common ones:
+
+| Warning says | Fix |
+|---|---|
+| `403` … rate limit … without a token | `GITHUB_TOKEN` isn't set. Workers share IP addresses, so GitHub's limit for anonymous requests is often used up. Create the token above. |
+| `403` … forbids access via a fine-grained personal access token… lifetime | The token lasts longer than the org allows. Generate a new one with a shorter expiration. |
+| `403` … other | The org hasn't approved the token yet, or blocks fine-grained tokens. Check **Org Settings → Personal access tokens** (pending requests and policy). |
+| `401` | The token expired or was revoked. Generate a new one. |
+
+After saving a new token, run `/digest` in Discord to check it.
 
 ## @Daedalus assistant
 
