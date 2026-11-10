@@ -3,10 +3,12 @@
 //   Verify GitHub button, /verify   a personal sign-in link (expires in 10 minutes)
 //   /notify                         show or change your ping settings
 //   /digest                         admins: post the PR digest now
+//   team-brain commands and buttons  see commands.js
 
 import { EPHEMERAL, fromHex, signState } from "./util.js";
 import { PREFS, findByDiscord } from "./people.js";
 import { postDigest } from "./digest.js";
+import { COMMANDS, handleButton, handleCommand } from "./commands.js";
 
 const LINK_TTL_MS = 10 * 60 * 1000;
 const PING = 1;
@@ -33,6 +35,8 @@ export async function handleInteraction(request, env, ctx) {
   }
   if (i.type === COMMAND && i.data?.name === "notify") return notify(i, env);
   if (i.type === COMMAND && i.data?.name === "digest") return digest(i, env, ctx);
+  if (i.type === COMMAND && COMMANDS.includes(i.data?.name)) return handleCommand(i, env, ctx);
+  if (i.type === COMPONENT && i.data?.custom_id !== "verify") return handleButton(i, env);
 
   const wantsVerify =
     (i.type === COMMAND && i.data?.name === "verify") ||
